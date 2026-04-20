@@ -224,7 +224,7 @@
                         </div>
                     </div>
 
-                    <div class="flex gap-3"><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">出發日期</label><input type="date" id="trip-start-date" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500"></div><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">回程日期</label><input type="date" id="trip-end-date" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500"></div></div>
+                    <div class="flex gap-3"><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">出發日期</label><input type="date" id="trip-start-date" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500"></div><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">回程日期</label><input type="date" id="trip-end-date" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500"></div></div>
                     <div><label class="block text-xs font-bold text-gray-500 mb-1">旅程名稱 (選填)</label><input type="text" id="trip-title-input" placeholder="自動產生或自行輸入名稱" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500"></div>
                     
                     <div>
@@ -345,7 +345,6 @@
                 </div>
 
                 <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-                    <!-- 綁定 Google 按鈕 -->
                     <button id="btn-bind-google" onclick="linkGoogleAccount()" class="w-full px-4 py-3 flex items-center justify-between bg-blue-50 hover:bg-blue-100 border-b border-gray-100 transition">
                         <div class="flex items-center gap-3">
                             <svg class="w-4 h-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
@@ -353,13 +352,12 @@
                         </div>
                         <i class="fa-solid fa-chevron-right text-blue-300 text-xs"></i>
                     </button>
-                    <!-- 已綁定提示 -->
                     <div id="status-google-linked" class="hidden w-full px-4 py-3 flex items-center justify-between bg-green-50 border-b border-gray-100">
                         <div class="flex items-center gap-3"><i class="fa-solid fa-cloud-check text-green-500 w-4 text-center"></i><span class="text-sm font-bold text-green-700">雲端備份運作中</span></div>
                         <i class="fa-solid fa-check text-green-500 text-xs"></i>
                     </div>
 
-                    <button class="w-full px-4 py-3 flex items-center justify-between bg-white hover:bg-gray-50 border-b border-gray-100 transition"><div class="flex items-center gap-3"><i class="fa-solid fa-circle-info text-gray-400 w-5 text-center"></i><span class="text-sm font-medium text-gray-700">關於 YOLEE 世界</span></div><span class="text-xs text-gray-400">v17.0 (共編版)</span></button>
+                    <button class="w-full px-4 py-3 flex items-center justify-between bg-white hover:bg-gray-50 border-b border-gray-100 transition"><div class="flex items-center gap-3"><i class="fa-solid fa-circle-info text-gray-400 w-5 text-center"></i><span class="text-sm font-medium text-gray-700">關於 YOLEE 世界</span></div><span class="text-xs text-gray-400">v17.1 (共編修復版)</span></button>
                     <button onclick="handleLogout()" class="w-full px-4 py-3 flex items-center justify-between bg-red-50 hover:bg-red-100 transition"><div class="flex items-center gap-3"><i class="fa-solid fa-arrow-right-from-bracket text-red-500 w-5 text-center"></i><span class="text-sm font-bold text-red-600">清除所有資料並登出</span></div></button>
                 </div>
             </div>
@@ -470,6 +468,7 @@
         let editingSpotId = null;
         const CURRENCY_NAMES = { TWD: '台幣', JPY: '日圓', KRW: '韓元', USD: '美金', EUR: '歐元', THB: '泰銖' };
         
+        let currentUser = null;
         let currentUserUid = null;
         let currentUserName = null;
         let tempSavedUser = null;
@@ -478,33 +477,53 @@
         let unsubscribeSharedTrip = null;
 
         // ==========================================
-        // 核心：雙重資料儲存機制 (Local + Cloud + Shared)
+        // 工具函數 (安全存取 LocalStorage / 解析日期)
         // ==========================================
-        
-        // 解析 Firebase Date，避免時區誤差
         function parseFirestoreDate(dateVal) {
             if (!dateVal) return new Date();
-            if (dateVal.toDate) return dateVal.toDate(); // Firestore Timestamp
+            if (dateVal.toDate) return dateVal.toDate();
             if (dateVal.seconds) return new Date(dateVal.seconds * 1000);
-            return new Date(dateVal); // String or JS Date
+            return new Date(dateVal);
         }
 
-        // 永遠優先寫入 LocalStorage，若有登入則推送到雲端
+        function safeSetLocal(key, val) { try { localStorage.setItem(key, val); } catch(e) { console.warn('寫入本機暫存被阻擋'); } }
+        function safeGetLocal(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
+        function safeRemoveLocal(key) { try { localStorage.removeItem(key); } catch(e) {} }
+
+        function getFlagEmoji(country) {
+            if(!country) return '🗺️';
+            if(country.includes('日本')) return '🇯🇵';
+            if(country.includes('韓國') || country.includes('南韓')) return '🇰🇷';
+            if(country.includes('泰國')) return '🇹🇭';
+            if(country.includes('美國')) return '🇺🇸';
+            if(country.includes('台灣') || country.includes('臺灣')) return '🇹🇼';
+            if(country.includes('英國')) return '🇬🇧';
+            if(country.includes('法國')) return '🇫🇷';
+            return '🗺️';
+        }
+
+        function parseDateLocal(dateStr) {
+            if (!dateStr) return new Date();
+            const parts = dateStr.split('-');
+            return new Date(parts[0], parts[1] - 1, parts[2]);
+        }
+
+        // ==========================================
+        // 核心：雙重資料儲存機制 (Local + Cloud + Shared)
+        // ==========================================
         function saveData(skipSharedSync = false) {
-            try { localStorage.setItem('yolee_trips', JSON.stringify(allTrips)); } catch(e) {}
+            safeSetLocal('yolee_trips', JSON.stringify(allTrips));
             
             if (currentUserUid) {
                 try {
                     const tripsData = JSON.parse(JSON.stringify(allTrips));
-                    // 存入個人資料庫
                     db.collection('users').doc(currentUserUid).set({
                         trips: tripsData,
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     }, { merge: true }).catch(e => console.warn("Cloud sync failed"));
 
-                    // 若目前編輯的旅程是「共編狀態」，同步更新至 shared_trips
                     if (!skipSharedSync && currentTripId) {
-                        const currentTrip = allTrips.find(t => t.id === currentTripId);
+                        const currentTrip = allTrips.find(t => String(t.id) === String(currentTripId));
                         if (currentTrip && currentTrip.shared) {
                             db.collection('shared_trips').doc(String(currentTripId)).set(
                                 JSON.parse(JSON.stringify(currentTrip))
@@ -515,9 +534,8 @@
             }
         }
 
-        // 啟動時先讀取本機資料
         function loadDataLocally() {
-            const data = localStorage.getItem('yolee_trips');
+            const data = safeGetLocal('yolee_trips');
             if (data) {
                 try {
                     allTrips = JSON.parse(data).map(trip => {
@@ -528,7 +546,27 @@
             }
         }
 
-        // 處理透過共編連結加入旅程
+        async function loadTripsFromCloud() {
+            if (!currentUserUid) return;
+            try {
+                const docRef = await db.collection('users').doc(currentUserUid).get();
+                if (docRef.exists) {
+                    const cloudData = docRef.data().trips || [];
+                    if (cloudData.length > 0 && allTrips.length === 0) {
+                        allTrips = cloudData.map(trip => { trip.startDate = parseFirestoreDate(trip.startDate); return trip; });
+                        saveData(); 
+                    } else if (allTrips.length > 0) {
+                        saveData(); 
+                    }
+                } else if (allTrips.length > 0) {
+                    saveData(); 
+                }
+            } catch (e) { console.warn("Cloud fetch failed", e); }
+        }
+
+        // ==========================================
+        // 共編邏輯
+        // ==========================================
         async function handleSharedTripLink(sharedTripId) {
             if (!currentUserUid) {
                 alert("⚠️ 共編功能需要綁定 Google 雲端帳號。\n請先到「設定」頁面綁定帳號後，再次點擊連結加入！");
@@ -536,7 +574,6 @@
                 return;
             }
             try {
-                // 清除網址參數保持乾淨
                 window.history.replaceState({}, document.title, window.location.pathname);
                 
                 const docRef = await db.collection('shared_trips').doc(sharedTripId).get();
@@ -550,7 +587,7 @@
                     } else {
                         allTrips.push(tripData);
                     }
-                    saveData(); // 同步到自己的雲端
+                    saveData(); 
                     
                     alert(`成功加入共編旅程：${tripData.title}！`);
                     openExistingTrip(tripData.id);
@@ -564,7 +601,6 @@
             }
         }
 
-        // 啟用即時監聽共編旅程
         function startListeningToSharedTrip(tripId) {
             if (unsubscribeSharedTrip) {
                 unsubscribeSharedTrip();
@@ -580,9 +616,8 @@
                         const index = allTrips.findIndex(t => String(t.id) === String(tripId));
                         if (index !== -1) {
                             allTrips[index] = tripData;
-                            saveData(true); // 存入本地，但略過寫回共編區(避免無限迴圈)
+                            saveData(true); 
                             
-                            // 若當前正在查看此旅程，重新渲染畫面 (避免打斷輸入)
                             if (String(currentTripId) === String(tripId)) {
                                 const isEditing = !document.getElementById('add-spot-modal').classList.contains('hidden') || 
                                                   !document.getElementById('edit-trip-modal').classList.contains('hidden');
@@ -596,13 +631,42 @@
             }
         }
 
-        // 監聽 Google 登入狀態
+        // ==========================================
+        // 登入流程 (含 Firebase 監聽與手動切換)
+        // ==========================================
+        
+        // 確保 DOM 載入後執行
+        document.addEventListener("DOMContentLoaded", () => {
+            loadDataLocally(); 
+
+            const savedUser = safeGetLocal('yolee_user');
+            const loginStateNew = document.getElementById('login-state-new');
+            const loginStateRet = document.getElementById('login-state-returning');
+
+            if (savedUser) {
+                currentUser = savedUser;
+                document.getElementById('login-nickname').value = currentUser;
+                document.getElementById('welcome-name').innerText = currentUser;
+                document.getElementById('settings-nickname').innerText = currentUser;
+                
+                if(loginStateNew) { loginStateNew.classList.add('hidden'); loginStateNew.classList.remove('block'); }
+                if(loginStateRet) { loginStateRet.classList.remove('hidden'); loginStateRet.classList.add('block'); }
+                
+                document.getElementById('returning-user-name').innerText = currentUser;
+                document.getElementById('btn-user-name').innerText = currentUser;
+            } else {
+                if(loginStateRet) { loginStateRet.classList.add('hidden'); loginStateRet.classList.remove('block'); }
+                if(loginStateNew) { loginStateNew.classList.remove('hidden'); loginStateNew.classList.add('block'); }
+            }
+            document.querySelectorAll('nav').forEach(n => n.classList.add('hidden'));
+        });
+
+        // 監聽 Firebase Auth 狀態
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUserUid = user.uid;
                 currentUserName = user.displayName || '旅行者';
                 
-                // 更新設定頁面 UI 顯示已綁定
                 const btnBindGoogle = document.getElementById('btn-bind-google');
                 if(btnBindGoogle) btnBindGoogle.classList.add('hidden');
                 const statusLinked = document.getElementById('status-google-linked');
@@ -617,26 +681,11 @@
                     if(img) { img.src = user.photoURL; img.classList.remove('hidden'); }
                 }
 
-                // 下載雲端資料並與本地合併
-                try {
-                    const docRef = await db.collection('users').doc(currentUserUid).get();
-                    if (docRef.exists) {
-                        const cloudData = docRef.data().trips || [];
-                        if (cloudData.length > 0 && allTrips.length === 0) {
-                            allTrips = cloudData.map(trip => { trip.startDate = parseFirestoreDate(trip.startDate); return trip; });
-                            saveData(); 
-                        } else if (allTrips.length > 0) {
-                            saveData(); 
-                        }
-                    } else if (allTrips.length > 0) {
-                        saveData(); 
-                    }
-                } catch (e) { console.warn("Cloud fetch failed", e); }
+                await loadTripsFromCloud();
                 
                 document.getElementById('global-loader').classList.add('hidden');
                 document.querySelectorAll('nav').forEach(n => n.classList.remove('hidden')); 
                 
-                // 檢查是否帶有共編參數
                 const urlParams = new URLSearchParams(window.location.search);
                 const sharedTripId = urlParams.get('tripId');
                 if (sharedTripId) {
@@ -658,14 +707,13 @@
             }
         });
 
-        // 觸發 Google 跳轉登入 
+        // 登入操作
         function loginWithGoogle() {
             document.getElementById('global-loader').classList.remove('hidden');
             const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithRedirect(provider);
         }
 
-        // 供設定頁面綁定使用
         function linkGoogleAccount() {
             const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithPopup(provider).then(() => {
@@ -675,51 +723,22 @@
             });
         }
 
-        // ==========================================
-        // 登入流程 (支援本地免帳號)
-        // ==========================================
-        document.addEventListener("DOMContentLoaded", () => {
-            loadDataLocally(); 
-
-            const savedUser = localStorage.getItem('yolee_user');
-            if (savedUser) {
-                currentUser = savedUser;
-                document.getElementById('login-nickname').value = currentUser;
-                document.getElementById('welcome-name').innerText = currentUser;
-                document.getElementById('settings-nickname').innerText = currentUser;
-                
-                document.getElementById('login-state-new').classList.add('hidden');
-                document.getElementById('login-state-new').classList.remove('block');
-                document.getElementById('login-state-returning').classList.remove('hidden');
-                document.getElementById('login-state-returning').classList.add('block');
-                
-                document.getElementById('returning-user-name').innerText = currentUser;
-                document.getElementById('btn-user-name').innerText = currentUser;
-            } else {
-                document.getElementById('login-state-returning').classList.add('hidden');
-                document.getElementById('login-state-returning').classList.remove('block');
-                document.getElementById('login-state-new').classList.remove('hidden');
-                document.getElementById('login-state-new').classList.add('block');
-            }
-            document.querySelectorAll('nav').forEach(n => n.classList.add('hidden'));
-        });
-
         function switchLoginStateToNew() {
             tempSavedUser = currentUser; 
-            document.getElementById('login-state-returning').classList.add('hidden');
-            document.getElementById('login-state-returning').classList.remove('block');
-            document.getElementById('login-state-new').classList.remove('hidden');
-            document.getElementById('login-state-new').classList.add('block');
+            const loginStateNew = document.getElementById('login-state-new');
+            const loginStateRet = document.getElementById('login-state-returning');
+            if(loginStateRet) { loginStateRet.classList.add('hidden'); loginStateRet.classList.remove('block'); }
+            if(loginStateNew) { loginStateNew.classList.remove('hidden'); loginStateNew.classList.add('block'); }
             document.getElementById('login-nickname').value = '';
             if(tempSavedUser) document.getElementById('cancel-switch-btn').classList.remove('hidden');
         }
 
         function cancelSwitchUser() {
             currentUser = tempSavedUser;
-            document.getElementById('login-state-new').classList.add('hidden');
-            document.getElementById('login-state-new').classList.remove('block');
-            document.getElementById('login-state-returning').classList.remove('hidden');
-            document.getElementById('login-state-returning').classList.add('block');
+            const loginStateNew = document.getElementById('login-state-new');
+            const loginStateRet = document.getElementById('login-state-returning');
+            if(loginStateNew) { loginStateNew.classList.add('hidden'); loginStateNew.classList.remove('block'); }
+            if(loginStateRet) { loginStateRet.classList.remove('hidden'); loginStateRet.classList.add('block'); }
         }
 
         function handleLocalLogin() {
@@ -727,13 +746,13 @@
             const sharedTripId = urlParams.get('tripId');
             if (sharedTripId) {
                 alert("⚠️ 這是共編連結！請改用「Google 雲端帳號登入」才能加入朋友的行程喔！");
-                return; // 不清空 URL，讓使用者點擊 Google 登入
+                return; 
             }
 
             const nickname = document.getElementById('login-nickname').value.trim();
             if (!nickname) { alert("請先輸入您的暱稱喔！"); return; }
             currentUser = nickname;
-            localStorage.setItem('yolee_user', currentUser);
+            safeSetLocal('yolee_user', currentUser);
             
             document.getElementById('welcome-name').innerText = currentUser;
             document.getElementById('settings-nickname').innerText = currentUser;
@@ -762,8 +781,8 @@
             if(confirm("確定要清除本機所有資料並登出嗎？此動作將刪除本設備的所有旅程紀錄。")) {
                 if (unsubscribeSharedTrip) { unsubscribeSharedTrip(); unsubscribeSharedTrip = null; }
                 auth.signOut(); 
-                localStorage.removeItem('yolee_user');
-                localStorage.removeItem('yolee_trips'); 
+                safeRemoveLocal('yolee_user');
+                safeRemoveLocal('yolee_trips'); 
                 currentUser = null; allTrips = []; tempSavedUser = null;
                 document.getElementById('cancel-switch-btn').classList.add('hidden');
                 document.querySelectorAll('nav').forEach(n => n.classList.add('hidden'));
@@ -777,7 +796,7 @@
             const newName = document.getElementById('settings-edit-nickname').value.trim();
             if(newName) {
                 currentUser = newName;
-                localStorage.setItem('yolee_user', currentUser);
+                safeSetLocal('yolee_user', currentUser);
                 document.getElementById('welcome-name').innerText = currentUser;
                 document.getElementById('settings-nickname').innerText = currentUser;
                 document.getElementById('returning-user-name').innerText = currentUser;
@@ -785,21 +804,6 @@
                 document.getElementById('settings-edit-nickname').value = '';
                 alert("暱稱修改成功！");
             }
-        }
-
-        // ==========================================
-        // 其他系統邏輯與渲染
-        // ==========================================
-        function getFlagEmoji(country) {
-            if(!country) return '🗺️';
-            if(country.includes('日本')) return '🇯🇵';
-            if(country.includes('韓國') || country.includes('南韓')) return '🇰🇷';
-            if(country.includes('泰國')) return '🇹🇭';
-            if(country.includes('美國')) return '🇺🇸';
-            if(country.includes('台灣') || country.includes('臺灣')) return '🇹🇼';
-            if(country.includes('英國')) return '🇬🇧';
-            if(country.includes('法國')) return '🇫🇷';
-            return '🗺️';
         }
 
         function initApp() {
@@ -875,6 +879,7 @@
             for (let i = 1; i <= daysInMonth; i++) {
                 let dateStr = `${year}-${month + 1}-${i}`; let isToday = (today.getDate() === i && today.getMonth() === month && today.getFullYear() === year); let tripsOnDate = tripMap.get(dateStr);
                 let classes = "calendar-day"; if (isToday) classes += " is-today shadow-md"; else if (tripsOnDate) classes += " has-trip shadow-sm"; else classes += " text-gray-700 bg-gray-50 border border-transparent";
+                
                 let badgeHtml = ""; 
                 if (tripsOnDate && tripsOnDate.length > 0) { 
                     const firstTrip = tripsOnDate[0];
@@ -962,6 +967,7 @@
 
         function openEditTripModal(id) {
             if (id) currentTripId = id; 
+            
             const trip = allTrips.find(t => String(t.id) === String(currentTripId));
             if (!trip) return;
             
@@ -1071,14 +1077,10 @@
             if (completedTrips.length === 0) compContainer.innerHTML = '<p class="text-xs text-gray-400">尚無已完成旅程</p>'; else completedTrips.forEach(t => { compContainer.innerHTML += buildCard(t, -999); });
         }
 
-        // ==========================================
-        // UI & 行程表 渲染邏輯 (加入共編標籤)
-        // ==========================================
         function loadTripToUI(trip, isSnapshot = false) { 
             document.getElementById('trip-title').innerText = trip.title; 
             document.getElementById('trip-dates').innerHTML = `<i class="fa-regular fa-calendar mr-1"></i>${trip.datesString}`; 
             
-            // 標示共編狀態
             if (trip.shared) {
                 document.getElementById('trip-country-tag').innerHTML = `${getFlagEmoji(trip.country)} ${trip.displayMain} <span class="ml-2 text-green-300 animate-pulse"><i class="fa-solid fa-bolt"></i> 共編中</span>`;
             } else {
@@ -1089,8 +1091,7 @@
             if(trip.isDomestic) bgIcon.className = "fa-solid fa-car absolute -right-4 -top-4 text-9xl opacity-20 transform -rotate-12";
             else bgIcon.className = "fa-solid fa-plane absolute -right-4 -top-4 text-9xl opacity-20 transform -rotate-12";
             
-            generateDayTabs(trip); 
-            renderTimeline(); 
+            generateDayTabs(trip); renderTimeline(); 
         }
 
         function openExistingTrip(id) { 
@@ -1100,7 +1101,6 @@
                 currentDayIndex = 0; 
                 loadTripToUI(trip); 
                 
-                // 啟動共編監聽
                 if (trip.shared) {
                     startListeningToSharedTrip(trip.id);
                 } else if (unsubscribeSharedTrip) {
@@ -1115,7 +1115,6 @@
         function generateDayTabs(trip) { const tabsContainer = document.getElementById('day-tabs-container'); tabsContainer.innerHTML = ''; let currentDate = new Date(trip.startDate); for (let i = 0; i < trip.totalDays; i++) { const btnClass = i === currentDayIndex ? "px-4 py-2 bg-blue-50 text-blue-600 font-bold rounded-lg whitespace-nowrap shadow-sm border border-blue-100" : "px-4 py-2 text-gray-500 hover:bg-gray-50 rounded-lg whitespace-nowrap transition"; tabsContainer.innerHTML += `<button class="${btnClass}" onclick="switchDay(${i})">第${i+1}天 (${currentDate.getMonth() + 1}/${currentDate.getDate()})</button>`; currentDate.setDate(currentDate.getDate() + 1); } }
         function switchDay(index) { currentDayIndex = index; generateDayTabs(allTrips.find(t=>String(t.id)===String(currentTripId))); renderTimeline(); }
 
-        // 共編 Modal 邏輯
         async function openShareModal() { 
             if (!currentUserUid) {
                 alert("請先登入或綁定 Google 雲端帳號才能啟用共編功能！");
@@ -1124,15 +1123,14 @@
             const trip = allTrips.find(t => String(t.id) === String(currentTripId));
             if (!trip) return;
 
-            // 如果還沒共編，上傳雲端並標記
             if (!trip.shared) {
                 try {
                     trip.shared = true;
-                    saveData(true); // 先存本地
+                    saveData(true); 
                     const tripData = JSON.parse(JSON.stringify(trip));
                     await db.collection('shared_trips').doc(String(trip.id)).set(tripData);
                     startListeningToSharedTrip(trip.id);
-                    loadTripToUI(trip); // 更新標籤
+                    loadTripToUI(trip); 
                 } catch (error) {
                     console.error(error);
                     alert("建立共編連結失敗，請檢查網路與權限。");
@@ -1208,15 +1206,14 @@
         function saveSpot() { const name = document.getElementById('spot-name').value; const address = document.getElementById('spot-address').value; const time = document.getElementById('spot-time').value; const h = parseInt(document.getElementById('spot-duration-h').value) || 0; const m = parseInt(document.getElementById('spot-duration-m').value) || 0; let durationStr = ""; if(h > 0) durationStr += `${h}小時`; if(m > 0) durationStr += `${m}分`; let type = document.querySelector('input[name="spot-type"]:checked').value; let customTypeStr = type === "custom" ? (document.getElementById('spot-custom-type').value || "自訂") : ""; const travelMode = document.getElementById('spot-travel-mode').value; const travelH = parseInt(document.getElementById('spot-travel-h').value) || 0; const travelM = parseInt(document.getElementById('spot-travel-m').value) || 0; let travelTimeStr = ""; if(travelH > 0) travelTimeStr += `${travelH}小時`; if(travelM > 0) travelTimeStr += `${travelM}分`; if (!name.trim()) { alert("請輸入店名或地點名稱！"); return; } let icon = "fa-location-dot"; let color = "bg-gray-500"; let typeLabel = ""; if (type === "attraction") { icon = "fa-camera"; color = "bg-orange-500"; typeLabel="景點"; } else if (type === "food") { icon = "fa-utensils"; color = "bg-red-500"; typeLabel="美食"; } else if (type === "shopping") { icon = "fa-bag-shopping"; color = "bg-purple-500"; typeLabel="購物"; } else if (type === "transit") { icon = "fa-train-subway"; color = "bg-blue-500"; typeLabel="交通"; } else if (type === "hotel") { icon = "fa-bed"; color = "bg-teal-500"; typeLabel="住宿"; } else { icon = "fa-star"; color = "bg-gray-700"; typeLabel=customTypeStr || "其他"; } const newSpotData = { dayIndex: currentDayIndex, name, address, time, duration: durationStr || "自由時間", durationH: h, durationM: m, type, customTypeStr, typeLabel, note: document.getElementById('spot-note').value, icon, color, travelMode, travelTime: travelTimeStr, travelH, travelM }; const trip = allTrips.find(t => String(t.id) === String(currentTripId)); let todayItinerary = trip.daysData[currentDayIndex]; if (editingSpotId) { const idx = todayItinerary.findIndex(s => s.id === editingSpotId); if (idx !== -1) todayItinerary[idx] = { ...todayItinerary[idx], ...newSpotData }; } else { todayItinerary.push({ id: Date.now(), ...newSpotData }); } todayItinerary.sort((a, b) => a.time.localeCompare(b.time)); saveData(); renderTimeline(); closeAddSpotModal(); }
         function editSpot(id) { const trip = allTrips.find(t => String(t.id) === String(currentTripId)); const spot = trip.daysData[currentDayIndex].find(s => s.id === id); if (!spot) return; editingSpotId = id; document.getElementById('spot-name').value = spot.name; document.getElementById('spot-address').value = spot.address || ''; document.getElementById('spot-time').value = spot.time; document.getElementById('spot-duration-h').value = spot.durationH || 0; document.getElementById('spot-duration-m').value = spot.durationM || 0; document.getElementById('spot-note').value = spot.note || ''; document.getElementById('spot-travel-mode').value = spot.travelMode || ''; document.getElementById('spot-travel-h').value = spot.travelH || 0; document.getElementById('spot-travel-m').value = spot.travelM || 0; document.querySelector(`input[name="spot-type"][value="${spot.type}"]`).checked = true; if (spot.type === 'custom') { document.getElementById('spot-custom-type').value = spot.customTypeStr; document.getElementById('spot-custom-type').classList.remove('hidden'); } else { document.getElementById('spot-custom-type').classList.add('hidden'); } document.getElementById('modal-title').innerText = "編輯行程點"; document.getElementById('save-spot-btn').innerText = "更新景點"; document.getElementById('add-spot-modal').classList.remove('hidden'); }
         function deleteSpot(id) { const trip = allTrips.find(t => String(t.id) === String(currentTripId)); trip.daysData[currentDayIndex] = trip.daysData[currentDayIndex].filter(spot => spot.id !== id); saveData(); renderTimeline(); }
-        
         function renderTimeline() { const trip = allTrips.find(t => String(t.id) === String(currentTripId)); const todayItinerary = trip.daysData[currentDayIndex]; const emptyState = document.getElementById('empty-itinerary-state'); const timelineContainer = document.getElementById('itinerary-timeline'); const fab = document.getElementById('fab-add-spot'); const navContainer = document.getElementById('full-day-nav-container'); document.getElementById('empty-day-num').innerText = currentDayIndex + 1; if (todayItinerary.length === 0) { emptyState.classList.remove('hidden'); timelineContainer.classList.add('hidden'); fab.classList.add('hidden'); navContainer.innerHTML = ''; return; } emptyState.classList.add('hidden'); timelineContainer.classList.remove('hidden'); fab.classList.remove('hidden'); if (todayItinerary.length >= 2) { const locations = todayItinerary.map(spot => encodeURIComponent((spot.address ? spot.address : spot.name) + (trip.location && !spot.name.includes(trip.location) ? ", " + trip.location : ""))); const origin = locations[0]; const destination = locations[locations.length - 1]; let waypoints = locations.length > 2 ? "&waypoints=" + locations.slice(1, -1).join('|') : ""; const fullDayUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypoints}`; navContainer.innerHTML = `<button onclick="openMapLink('${fullDayUrl}')" class="px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-lg whitespace-nowrap shadow hover:bg-green-700 flex items-center"><i class="fa-brands fa-google mr-1"></i> 整日導航</button>`; } else { navContainer.innerHTML = ''; } timelineContainer.innerHTML = ''; todayItinerary.forEach((item, index) => { const isLast = index === todayItinerary.length - 1; const prevItem = index > 0 ? todayItinerary[index - 1] : null; const searchKeyword = encodeURIComponent((item.address ? item.address : item.name) + (trip.location && !item.name.includes(trip.location) ? ", " + trip.location : "")); let travelInfoHtml = ""; if (item.travelMode || item.travelTime) { let travelModeIcon = "fa-route"; let travelModeText = "前往"; if(item.travelMode === 'driving') { travelModeIcon = "fa-car"; travelModeText = "開車"; } else if(item.travelMode === 'transit') { travelModeIcon = "fa-train"; travelModeText = "大眾運輸"; } else if(item.travelMode === 'walking') { travelModeIcon = "fa-person-walking"; travelModeText = "步行"; } const timeText = item.travelTime ? `約 ${item.travelTime}` : ""; if (index > 0) travelInfoHtml = `<div class="flex items-center ml-16 pl-4 mb-3 text-xs text-blue-500 font-medium"><i class="fa-solid fa-arrow-down mr-2 opacity-50"></i><span class="bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 flex items-center shadow-sm"><i class="fa-solid ${travelModeIcon} mr-1"></i>${travelModeText} ${timeText}</span></div>`; } let navToHereHtml = ""; if (prevItem) { const prevKeyword = encodeURIComponent((prevItem.address ? prevItem.address : prevItem.name) + (trip.location && !prevItem.name.includes(trip.location) ? ", " + trip.location : "")); let travelModeParam = item.travelMode ? `&travelmode=${item.travelMode}` : ""; navToHereHtml = `<button onclick="openMapLink('https://www.google.com/maps/dir/?api=1&origin=${prevKeyword}&destination=${searchKeyword}${travelModeParam}')" class="flex-1 bg-green-50 text-green-600 text-[10px] py-1.5 rounded font-bold hover:bg-green-100 transition flex items-center justify-center"><i class="fa-solid fa-route mr-1"></i> 導航到此站</button>`; } timelineContainer.innerHTML += `${travelInfoHtml}<div class="relative flex items-start mb-2 group animate-[fadeIn_0.3s_ease-out]"><div class="w-16 shrink-0 text-right pr-4 pt-1"><div class="text-sm font-bold text-gray-800">${item.time}</div><div class="text-[10px] text-gray-400">${item.duration}</div></div><div class="relative flex flex-col items-center mr-4"><div class="w-8 h-8 rounded-full ${item.color} text-white flex items-center justify-center shadow-md z-10"><i class="fa-solid ${item.icon} text-sm"></i></div>${!isLast ? '<div class="w-0.5 h-full bg-gray-200 absolute top-8 bottom-[-20px] z-0"></div>' : ''}</div><div class="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-3 hover:shadow-md transition mb-3"><div class="flex justify-between items-start"><div><span class="text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded font-bold mb-1 inline-block">${item.typeLabel}</span><h3 class="font-bold text-gray-800 text-base leading-tight">${item.name}</h3>${item.address ? `<p class="text-[10px] text-gray-400 mt-1"><i class="fa-solid fa-location-dot mr-1"></i> ${item.address}</p>` : ''}</div><div class="flex gap-2 text-gray-300"><button class="hover:text-blue-500 text-xs transition" onclick="editSpot(${item.id})"><i class="fa-solid fa-pen"></i></button><button class="hover:text-red-500 text-xs transition" onclick="deleteSpot(${item.id})"><i class="fa-solid fa-trash"></i></button></div></div>${item.note ? `<p class="text-xs text-gray-500 mt-2 bg-gray-50 p-1.5 rounded"><i class="fa-regular fa-comment-dots mr-1"></i>${item.note}</p>` : ''}<div class="flex gap-2 mt-3"><button onclick="openMapLink('https://www.google.com/maps/search/?api=1&query=${searchKeyword}')" class="flex-1 bg-sky-50 text-sky-600 text-[10px] py-1.5 rounded font-bold hover:bg-sky-100 transition flex items-center justify-center"><i class="fa-solid fa-map-pin mr-1"></i> 查看地標</button>${navToHereHtml}</div></div></div>`; }); }
 
         function openMapLink(url) { const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer'; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+        function openShareModal() { document.getElementById('share-modal').classList.remove('hidden'); }
+        function closeShareModal() { document.getElementById('share-modal').classList.add('hidden'); }
+        function copyLink(btn) { btn.innerText = "已複製！"; btn.classList.replace('bg-blue-600', 'bg-green-500'); setTimeout(() => { btn.innerText = "複製"; btn.classList.replace('bg-green-500', 'bg-blue-600'); }, 2000); }
         function toggleCustomType() { document.getElementById('spot-custom-type').classList.toggle('hidden', document.querySelector('input[name="spot-type"]:checked').value !== 'custom'); }
 
-        // ==========================================
-        // AI 嚮導 (含 Google Search 整合)
-        // ==========================================
         function openAiModal() { 
             const chatArea = document.getElementById('ai-chat-area'); const displayDay = currentDayIndex + 1;
             chatArea.innerHTML = `<div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-robot"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-gray-700 w-full max-w-[85%]">你好！我是你的在地嚮導。<br>目前正在為你的<b>「第 ${displayDay} 天」</b>尋找靈感。<br>請告訴我你想找什麼？例如：<br><span class="text-indigo-500 font-medium cursor-pointer" onclick="fillAiPrompt('請推薦附近適合吃午餐的平價美食')">👉 請推薦附近適合吃午餐的平價美食</span><br><span class="text-indigo-500 font-medium cursor-pointer" onclick="fillAiPrompt('推薦近期舉辦的特殊活動或祭典')">👉 推薦近期舉辦的特殊活動或祭典</span><br><hr class="my-2 border-gray-100"><button onclick="openMapLink('https://www.google.com/maps')" class="w-full bg-green-50 text-green-700 py-1.5 rounded-lg text-xs font-bold hover:bg-green-100 transition mt-1 flex items-center justify-center"><i class="fa-brands fa-google mr-1"></i> 直接開啟 Google Maps 搜尋</button></div></div>`;
@@ -1230,13 +1227,10 @@
             const chatArea = document.getElementById('ai-chat-area'); const trip = allTrips.find(t => String(t.id) === String(currentTripId)); const contextLocation = trip ? trip.location : "未知地點";
             chatArea.innerHTML += `<div class="flex gap-3 justify-end animate-[fadeIn_0.3s_ease-out]"><div class="bg-indigo-600 p-3 rounded-2xl rounded-tr-none shadow-sm text-sm text-white max-w-[85%]">${prompt}</div></div>`;
             inputEl.value = '';
-            
             const loadingId = 'loading-' + Date.now();
             chatArea.innerHTML += `<div id="${loadingId}" class="flex gap-3 animate-[fadeIn_0.3s_ease-out]"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-robot"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-gray-700 flex items-center gap-2"><div class="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600"></div> 思考與網頁搜尋中...</div></div>`;
             chatArea.scrollTop = chatArea.scrollHeight; 
-
             const displayDay = currentDayIndex + 1; 
-            
             const systemPrompt = `你是一個專業的在地旅遊嚮導。使用者目前正在安排去「${contextLocation}」的第 ${displayDay} 天行程。請根據使用者的需求推薦景點、餐廳或活動。使用者要求幾個就給幾個（預設推薦3~5個）。你必須嚴格只回傳 JSON 格式的陣列。JSON 格式：[{"name": "地點名稱", "type": "food 或 attraction 或 shopping", "desc": "一句話推薦理由", "time": "建議停留時間"}]`;
 
             try {
@@ -1249,35 +1243,21 @@
                         generationConfig: { responseMimeType: "application/json" }
                     })
                 });
-
                 if (!response.ok) throw new Error("API 呼叫失敗");
-
-                const data = await response.json();
-                const recommendations = JSON.parse(data.candidates[0].content.parts[0].text);
+                const data = await response.json(); const recommendations = JSON.parse(data.candidates[0].content.parts[0].text);
                 document.getElementById(loadingId).remove();
-
                 let cardsHtml = '';
                 recommendations.forEach((item) => {
-                    const icon = item.type === 'food' ? 'fa-utensils text-red-500 bg-red-50' : 'fa-camera text-orange-500 bg-orange-50';
-                    const typeLabel = item.type === 'food' ? '美食' : '景點';
-                    const spotDataStr = encodeURIComponent(JSON.stringify({ name: item.name, type: item.type, note: item.desc, durationStr: item.time }));
+                    const icon = item.type === 'food' ? 'fa-utensils text-red-500 bg-red-50' : 'fa-camera text-orange-500 bg-orange-50'; const typeLabel = item.type === 'food' ? '美食' : '景點'; const spotDataStr = encodeURIComponent(JSON.stringify({ name: item.name, type: item.type, note: item.desc, durationStr: item.time }));
                     cardsHtml += `<div class="border border-gray-100 rounded-xl p-3 mb-2 bg-gray-50 flex flex-col"><div class="flex items-center gap-2 mb-2"><div class="w-8 h-8 rounded-full ${icon} flex items-center justify-center shrink-0"><i class="fa-solid ${icon.split(' ')[0]}"></i></div><div class="flex-1"><h4 class="font-bold text-gray-800 text-sm">${item.name}</h4><span class="text-[10px] text-gray-500">${typeLabel} • ${item.time}</span></div></div><p class="text-xs text-gray-600 mb-3 line-clamp-2">${item.desc}</p><button onclick="addAiSpotToTimeline('${spotDataStr}')" class="w-full bg-indigo-50 text-indigo-600 text-xs font-bold py-2 rounded-lg hover:bg-indigo-100 transition"><i class="fa-solid fa-plus mr-1"></i> 加入第 ${displayDay} 天</button></div>`;
                 });
-
                 chatArea.innerHTML += `<div class="flex gap-3 animate-[fadeIn_0.3s_ease-out]"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-robot"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-gray-700 w-full max-w-[85%]"><p class="mb-3 text-indigo-800 font-bold">為您找到以下靈感：</p>${cardsHtml}</div></div>`;
-            } catch (error) {
-                document.getElementById(loadingId).remove();
-                chatArea.innerHTML += `<div class="flex gap-3 animate-[fadeIn_0.3s_ease-out]"><div class="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-red-600 max-w-[85%]">抱歉，AI 思考時發生錯誤。請確認金鑰或網路連線。</div></div>`;
-            }
+            } catch (error) { document.getElementById(loadingId).remove(); chatArea.innerHTML += `<div class="flex gap-3 animate-[fadeIn_0.3s_ease-out]"><div class="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-red-600 max-w-[85%]">抱歉，AI 思考時發生錯誤。請確認金鑰或網路連線。</div></div>`; }
             chatArea.scrollTop = chatArea.scrollHeight;
         }
-
         function addAiSpotToTimeline(encodedData) {
-            const data = JSON.parse(decodeURIComponent(encodedData));
-            openAddSpotModal();
-            document.getElementById('spot-name').value = data.name; document.getElementById('spot-note').value = "💡 AI推薦：" + data.note;
-            if (document.querySelector(`input[name="spot-type"][value="${data.type}"]`)) { document.querySelector(`input[name="spot-type"][value="${data.type}"]`).checked = true; } 
-            else { document.querySelector(`input[name="spot-type"][value="attraction"]`).checked = true; }
+            const data = JSON.parse(decodeURIComponent(encodedData)); openAddSpotModal(); document.getElementById('spot-name').value = data.name; document.getElementById('spot-note').value = "💡 AI推薦：" + data.note;
+            if (document.querySelector(`input[name="spot-type"][value="${data.type}"]`)) { document.querySelector(`input[name="spot-type"][value="${data.type}"]`).checked = true; } else { document.querySelector(`input[name="spot-type"][value="attraction"]`).checked = true; }
             toggleCustomType(); closeAiModal();
         }
     </script>
