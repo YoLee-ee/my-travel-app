@@ -49,15 +49,15 @@
     <!-- 全域載入遮罩 -->
     <div id="global-loader" class="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center pb-20 hidden">
         <div class="loader mb-4"></div>
-        <p class="text-gray-500 font-bold text-sm animate-pulse">正在連線至 YOLEE 雲端...</p>
+        <p class="text-gray-500 font-bold text-sm animate-pulse mt-2">正在連線至 YOLEE 雲端...</p>
     </div>
 
     <div class="app-container">
         
         <!-- ========================================== -->
-        <!-- 畫面 0：登入頁面 -->
+        <!-- 畫面 0：登入頁面 (極簡匿名登入版) -->
         <!-- ========================================== -->
-        <div id="screen-login" class="screen active bg-gradient-to-br from-blue-600 to-indigo-900 text-white relative">
+        <div id="screen-login" class="screen bg-gradient-to-br from-blue-600 to-indigo-900 text-white relative">
             <div class="absolute inset-0 overflow-hidden pointer-events-none">
                 <i class="fa-solid fa-earth-asia absolute -right-20 -top-20 text-[300px] opacity-10 text-white"></i>
                 <i class="fa-solid fa-plane absolute left-10 top-1/4 text-6xl opacity-10 transform -rotate-12"></i>
@@ -72,32 +72,18 @@
 
                 <div class="w-full max-w-sm bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl p-6 shadow-xl border border-white border-opacity-20 text-center">
                     
-                    <div id="login-state-new" class="block">
-                        <div class="mb-5 text-left">
-                            <label class="block text-xs font-bold text-blue-200 mb-2 ml-1">請輸入您的顯示暱稱</label>
-                            <input type="text" id="login-nickname" placeholder="例如：旅遊達人 小明" class="w-full bg-white bg-opacity-90 border-none rounded-xl py-3 px-4 text-gray-800 font-bold focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400">
-                        </div>
-                        
-                        <button onclick="handleLocalLogin()" class="w-full bg-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg hover:bg-blue-400 hover:scale-[1.02] transition flex items-center justify-center gap-2 mb-3">
-                            進入單機模式 <i class="fa-solid fa-arrow-right"></i>
-                        </button>
-
-                        <div class="relative flex items-center py-2">
-                            <div class="flex-grow border-t border-white/20"></div>
-                            <span class="flex-shrink-0 mx-3 text-white/50 text-xs">或</span>
-                            <div class="flex-grow border-t border-white/20"></div>
-                        </div>
-
-                        <button onclick="loginWithGoogle()" class="w-full bg-white text-gray-800 font-bold py-3.5 mt-2 rounded-xl shadow-lg hover:bg-gray-50 hover:scale-[1.02] transition flex items-center justify-center gap-3">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24">
-                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                            </svg>
-                            Google 雲端帳號登入
-                        </button>
+                    <div class="mb-5 text-left">
+                        <label class="block text-xs font-bold text-blue-200 mb-2 ml-1">請輸入您的顯示暱稱</label>
+                        <input type="text" id="login-nickname" placeholder="例如：旅遊達人 小明" class="w-full bg-white bg-opacity-90 border-none rounded-xl py-3 px-4 text-gray-800 font-bold focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400">
                     </div>
+                    
+                    <button onclick="handleLocalLogin()" class="w-full bg-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg hover:bg-blue-400 hover:scale-[1.02] transition flex items-center justify-center gap-2 mb-3">
+                        進入 YOLEE 世界 <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+
+                    <p class="text-[10px] text-blue-200 mt-4 leading-relaxed">
+                        系統將在背景自動啟用安全連線，<br>您可以隨時與朋友分享行程並即時共同編輯。
+                    </p>
 
                 </div>
             </div>
@@ -126,36 +112,55 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-7 gap-1 text-center mb-2 mt-2">
-                        <div class="text-xs text-red-400 font-bold">日</div><div class="text-xs text-gray-400">一</div><div class="text-xs text-gray-400">二</div><div class="text-xs text-gray-400">三</div><div class="text-xs text-gray-400">四</div><div class="text-xs text-gray-400">五</div><div class="text-xs text-gray-400 font-bold">六</div>
+                        <div class="text-xs text-red-400 font-bold">日</div><div class="text-xs text-gray-400">一</div><div class="text-xs text-gray-400">二</div>
+                        <div class="text-xs text-gray-400">三</div><div class="text-xs text-gray-400">四</div><div class="text-xs text-gray-400">五</div><div class="text-xs text-gray-400 font-bold">六</div>
                     </div>
                     <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
                 </div>
 
-                <!-- 即時匯率 -->
+                <!-- 即時匯率 (雙向動態) -->
                 <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
-                    <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-gray-800 text-lg">即時匯率換算</h3><i class="fa-solid fa-coins text-sky-500 text-xl"></i></div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-gray-800 text-lg">即時匯率換算</h3>
+                        <i class="fa-solid fa-coins text-sky-500 text-xl"></i>
+                    </div>
+                    
                     <div class="flex gap-2 items-center mb-2 bg-gray-50 rounded-xl p-3 border border-gray-100">
                         <div class="flex-1 flex flex-col">
-                            <select id="base-currency-select" onchange="fetchCurrencyRates()" class="text-sm sm:text-base font-bold text-gray-600 hover:text-sky-600 transition bg-transparent outline-none mb-1 cursor-pointer appearance-none"><option value="TWD" selected>台幣 (TWD) ▼</option><option value="USD">美金 (USD) ▼</option><option value="JPY">日圓 (JPY) ▼</option><option value="KRW">韓元 (KRW) ▼</option><option value="EUR">歐元 (EUR) ▼</option><option value="THB">泰銖 (THB) ▼</option></select>
-                            <div class="relative"><input type="number" id="calc-base" oninput="calcCurrency('BASE')" class="w-full bg-white border border-gray-200 rounded-lg py-1.5 px-2 text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-sky-500 text-right" placeholder="輸入金額"></div>
+                            <select id="base-currency-select" onchange="fetchCurrencyRates()" class="text-sm sm:text-base font-bold text-gray-600 hover:text-sky-600 transition bg-transparent outline-none mb-1 cursor-pointer appearance-none">
+                                <option value="TWD" selected>台幣 (TWD) ▼</option><option value="USD">美金 (USD) ▼</option><option value="JPY">日圓 (JPY) ▼</option>
+                                <option value="KRW">韓元 (KRW) ▼</option><option value="EUR">歐元 (EUR) ▼</option><option value="THB">泰銖 (THB) ▼</option>
+                            </select>
+                            <div class="relative">
+                                <input type="number" id="calc-base" oninput="calcCurrency('BASE')" class="w-full bg-white border border-gray-200 rounded-lg py-1.5 px-2 text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-sky-500 text-right" placeholder="輸入金額">
+                            </div>
                         </div>
                         <div class="text-gray-300 text-lg mt-4"><i class="fa-solid fa-right-left"></i></div>
                         <div class="flex-1 flex flex-col">
-                            <select id="target-currency-select" onchange="fetchCurrencyRates()" class="text-sm sm:text-base font-bold text-emerald-600 hover:text-emerald-700 transition bg-transparent outline-none mb-1 cursor-pointer appearance-none text-right"><option value="JPY" selected>日圓 (JPY) ▼</option><option value="USD">美金 (USD) ▼</option><option value="KRW">韓元 (KRW) ▼</option><option value="EUR">歐元 (EUR) ▼</option><option value="THB">泰銖 (THB) ▼</option><option value="TWD">台幣 (TWD) ▼</option></select>
-                            <div class="relative"><input type="number" id="calc-target" oninput="calcCurrency('TARGET')" class="w-full bg-white border border-gray-200 rounded-lg py-1.5 px-2 text-sm font-bold text-emerald-700 outline-none focus:ring-2 focus:ring-emerald-500 text-right" placeholder="換算結果"></div>
+                            <select id="target-currency-select" onchange="fetchCurrencyRates()" class="text-sm sm:text-base font-bold text-emerald-600 hover:text-emerald-700 transition bg-transparent outline-none mb-1 cursor-pointer appearance-none text-right">
+                                <option value="JPY" selected>日圓 (JPY) ▼</option><option value="USD">美金 (USD) ▼</option><option value="KRW">韓元 (KRW) ▼</option>
+                                <option value="EUR">歐元 (EUR) ▼</option><option value="THB">泰銖 (THB) ▼</option><option value="TWD">台幣 (TWD) ▼</option>
+                            </select>
+                            <div class="relative">
+                                <input type="number" id="calc-target" oninput="calcCurrency('TARGET')" class="w-full bg-white border border-gray-200 rounded-lg py-1.5 px-2 text-sm font-bold text-emerald-700 outline-none focus:ring-2 focus:ring-emerald-500 text-right" placeholder="換算結果">
+                            </div>
                         </div>
                     </div>
-                    <p id="rate-info-text" class="text-[10px] text-gray-400 text-right mb-2">載入中...</p>
+                    <p id="rate-info-text" class="text-[10px] text-gray-400 text-right mb-3">載入中...</p>
                 </div>
 
                 <!-- 旅行小知識區塊 -->
                 <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex items-start gap-4 relative">
                     <div class="text-3xl text-amber-400 mt-1"><i class="fa-solid fa-lightbulb"></i></div>
                     <div class="flex-1">
-                        <div class="flex justify-between items-center mb-1"><h3 class="font-bold text-gray-800 text-sm">旅行實用小提示</h3><button onclick="renderTravelTip()" class="text-gray-400 hover:text-amber-500 transition"><i class="fa-solid fa-rotate-right text-xs"></i></button></div>
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-gray-800 text-sm">旅行實用小提示</h3>
+                            <button onclick="renderTravelTip()" class="text-gray-400 hover:text-amber-500 transition"><i class="fa-solid fa-rotate-right text-xs"></i></button>
+                        </div>
                         <p id="travel-tip-text" class="text-xs text-gray-500 leading-relaxed min-h-[3rem]"></p>
                     </div>
                 </div>
+
             </div>
         </div>
 
@@ -207,8 +212,8 @@
                         </div>
                     </div>
 
-                    <div class="flex gap-3"><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">出發日期</label><input type="date" id="trip-start-date" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500"></div><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">回程日期</label><input type="date" id="trip-end-date" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500"></div></div>
-                    <div><label class="block text-xs font-bold text-gray-500 mb-1">旅程名稱 (選填)</label><input type="text" id="trip-title-input" placeholder="自動產生或自行輸入名稱" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500"></div>
+                    <div class="flex gap-4"><div class="flex-1"><label class="block text-sm font-bold text-gray-700 mb-1">出發日期</label><input type="date" id="trip-start-date" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl py-3 px-4"></div><div class="flex-1"><label class="block text-sm font-bold text-gray-700 mb-1">回程日期</label><input type="date" id="trip-end-date" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl py-3 px-4"></div></div>
+                    <div><label class="block text-sm font-bold text-gray-700 mb-1">旅程名稱 (選填)</label><input type="text" id="trip-title-input" placeholder="自動產生或自行輸入名稱" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-xl py-3 px-4"></div>
                     
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">預計使用幣種</label>
@@ -310,12 +315,11 @@
             <div class="p-6 space-y-4">
                 <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 mb-6">
                     <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 text-2xl">
-                        <img id="settings-avatar" src="https://ui-avatars.com/api/?name=User&background=random" class="w-full h-full rounded-full hidden">
                         <i id="settings-avatar-icon" class="fa-solid fa-user"></i>
                     </div>
                     <div class="flex-1">
                         <h4 class="font-bold text-gray-800 text-lg" id="settings-nickname">未登入</h4>
-                        <p class="text-xs text-gray-500" id="cloud-status-text">💾 本機安全儲存模式</p>
+                        <p class="text-xs text-green-500 font-bold" id="cloud-status-text"><i class="fa-solid fa-shield-halved"></i> 本機安全儲存模式</p>
                     </div>
                 </div>
 
@@ -328,21 +332,12 @@
                 </div>
 
                 <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-                    <!-- 綁定 Google 按鈕 -->
-                    <button id="btn-bind-google" onclick="linkGoogleAccount()" class="w-full px-4 py-3 flex items-center justify-between bg-blue-50 hover:bg-blue-100 border-b border-gray-100 transition">
-                        <div class="flex items-center gap-3">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                            <span class="text-sm font-bold text-blue-700">綁定 Google 雲端備份</span>
-                        </div>
-                        <i class="fa-solid fa-chevron-right text-blue-300 text-xs"></i>
-                    </button>
-                    <!-- 已綁定提示 -->
-                    <div id="status-google-linked" class="hidden w-full px-4 py-3 flex items-center justify-between bg-green-50 border-b border-gray-100">
-                        <div class="flex items-center gap-3"><i class="fa-solid fa-cloud-check text-green-500 w-4 text-center"></i><span class="text-sm font-bold text-green-700">雲端備份運作中</span></div>
+                    <div id="status-google-linked" class="w-full px-4 py-3 flex items-center justify-between bg-green-50 border-b border-gray-100">
+                        <div class="flex items-center gap-3"><i class="fa-solid fa-bolt text-green-500 w-4 text-center"></i><span class="text-sm font-bold text-green-700">⚡ 即時共編模式已啟用</span></div>
                         <i class="fa-solid fa-check text-green-500 text-xs"></i>
                     </div>
 
-                    <button class="w-full px-4 py-3 flex items-center justify-between bg-white hover:bg-gray-50 border-b border-gray-100 transition"><div class="flex items-center gap-3"><i class="fa-solid fa-circle-info text-gray-400 w-5 text-center"></i><span class="text-sm font-medium text-gray-700">關於 YOLEE 世界</span></div><span class="text-xs text-gray-400">v20.0 (穩定共編版)</span></button>
+                    <button class="w-full px-4 py-3 flex items-center justify-between bg-white hover:bg-gray-50 border-b border-gray-100 transition"><div class="flex items-center gap-3"><i class="fa-solid fa-circle-info text-gray-400 w-5 text-center"></i><span class="text-sm font-medium text-gray-700">關於 YOLEE 世界</span></div><span class="text-xs text-gray-400">v22.0 (匿名共編版)</span></button>
                     <button onclick="handleLogout()" class="w-full px-4 py-3 flex items-center justify-between bg-red-50 hover:bg-red-100 transition"><div class="flex items-center gap-3"><i class="fa-solid fa-arrow-right-from-bracket text-red-500 w-5 text-center"></i><span class="text-sm font-bold text-red-600">清除所有資料並登出</span></div></button>
                 </div>
             </div>
@@ -393,7 +388,7 @@
                     <h3 class="font-bold text-lg">邀請朋友一起編輯</h3> 
                     <button onclick="closeShareModal()" class="text-gray-400"><i class="fa-solid fa-xmark"></i></button> 
                 </div> 
-                <p class="text-sm text-gray-500 mb-4">將此連結傳給旅伴，他們就能加入這個行程！<br><span class="text-xs text-red-400">*(註：需雙方皆綁定 Google 雲端帳號才能使用共編)*</span></p> 
+                <p class="text-sm text-gray-500 mb-4">將此連結傳給旅伴，只要他們點開連結，就能隨時跟您<strong class="text-green-600">即時共編</strong>行程！<br><span class="text-xs text-red-400">*(註：為了隱私，行李與記帳本不會被共用，各自獨立)*</span></p> 
                 <div class="flex items-center gap-2 bg-gray-100 p-3 rounded-xl mb-6"> 
                     <input type="text" id="share-link-input" readonly value="產生中..." class="bg-transparent flex-1 text-sm text-gray-600 outline-none"> 
                     <button onclick="copyLink(this)" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold">複製</button> 
@@ -402,7 +397,7 @@
         </div>
 
         <!-- 新增景點 Modal -->
-        <div id="add-spot-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex justify-center items-end sm:items-center"><div class="bg-white w-full max-w-md sm:rounded-2xl rounded-t-2xl p-6 h-[85vh] sm:h-auto overflow-y-auto"><div class="flex justify-between items-center mb-4"><h3 id="modal-title" class="font-bold text-lg text-gray-800">新增行程點</h3><button onclick="closeAddSpotModal()" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button></div><div class="space-y-4"><div><label class="block text-xs font-bold text-gray-500 mb-1">店名 / 景點名稱 <span class="text-red-500">*</span></label><input type="text" id="spot-name" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"><label class="block text-xs font-bold text-gray-500 mb-1">詳細地址 (選填)</label><input type="text" id="spot-address" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"></div><div class="flex gap-3"><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">開始時間</label><input type="time" id="spot-time" value="09:00" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"></div><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">停留時間</label><div class="flex items-center gap-1"><input type="number" id="spot-duration-h" value="1" min="0" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"><span class="text-xs text-gray-500">時</span><input type="number" id="spot-duration-m" value="0" min="0" step="5" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"><span class="text-xs text-gray-500">分</span></div></div></div><div><label class="block text-xs font-bold text-gray-500 mb-2">分類</label><div class="grid grid-cols-3 gap-2 mb-2"><label class="cursor-pointer"><input type="radio" name="spot-type" value="attraction" class="peer sr-only" checked onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-orange-50 peer-checked:border-orange-500 peer-checked:text-orange-600 transition"><i class="fa-solid fa-camera mb-1"></i><div class="text-[10px] font-bold">景點</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="food" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-red-50 peer-checked:border-red-500 peer-checked:text-red-600 transition"><i class="fa-solid fa-utensils mb-1"></i><div class="text-[10px] font-bold">美食</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="shopping" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-purple-50 peer-checked:border-purple-500 peer-checked:text-purple-600 transition"><i class="fa-solid fa-bag-shopping mb-1"></i><div class="text-[10px] font-bold">購物</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="transit" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-600 transition"><i class="fa-solid fa-train mb-1"></i><div class="text-[10px] font-bold">交通</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="hotel" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-teal-50 peer-checked:border-teal-500 peer-checked:text-teal-600 transition"><i class="fa-solid fa-bed mb-1"></i><div class="text-[10px] font-bold">住宿</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="custom" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-gray-100 peer-checked:border-gray-600 transition"><i class="fa-solid fa-pen mb-1"></i><div class="text-[10px] font-bold">自訂</div></div></label></div><input type="text" id="spot-custom-type" placeholder="請輸入自訂分類" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 hidden text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></div><div class="bg-blue-50 p-3 rounded-xl border border-blue-100"><label class="block text-xs font-bold text-blue-800 mb-2"><i class="fa-solid fa-route mr-1"></i>前往此站的交通 (從上一站)</label><div class="flex gap-2 items-center"><select id="spot-travel-mode" class="flex-1 bg-white border border-blue-200 rounded-lg py-2 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"><option value="">最佳方式 (自動)</option><option value="driving">🚗 開車/計程車</option><option value="transit">🚇 大眾運輸</option><option value="walking">🚶 步行</option></select><div class="flex items-center gap-1 flex-1"><input type="number" id="spot-travel-h" value="0" min="0" class="w-full bg-white border border-blue-200 rounded-lg py-2 text-center text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"><span class="text-[10px]">時</span><input type="number" id="spot-travel-m" value="0" min="0" step="5" class="w-full bg-white border border-blue-200 rounded-lg py-2 text-center text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"><span class="text-[10px]">分</span></div></div></div><div><label class="block text-xs font-bold text-gray-500 mb-1">備註 (選填)</label><input type="text" id="spot-note" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"></div></div><button id="save-spot-btn" onclick="saveSpot()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-md mt-6 hover:bg-blue-700 transition">儲存景點</button></div></div>
+        <div id="add-spot-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex justify-center items-end sm:items-center"><div class="bg-white w-full max-w-md sm:rounded-2xl rounded-t-2xl p-6 h-[85vh] sm:h-auto overflow-y-auto"><div class="flex justify-between items-center mb-4"><h3 id="modal-title" class="font-bold text-lg text-gray-800">新增行程點</h3><button onclick="closeAddSpotModal()" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button></div><div class="space-y-4"><div><label class="block text-xs font-bold text-gray-500 mb-1">店名 / 景點名稱 <span class="text-red-500">*</span></label><input type="text" id="spot-name" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 mb-2"><label class="block text-xs font-bold text-gray-500 mb-1">詳細地址 (選填)</label><input type="text" id="spot-address" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3"></div><div class="flex gap-3"><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">開始時間</label><input type="time" id="spot-time" value="09:00" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3"></div><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">停留時間</label><div class="flex items-center gap-1"><input type="number" id="spot-duration-h" value="1" min="0" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 text-center"><span class="text-xs text-gray-500">時</span><input type="number" id="spot-duration-m" value="0" min="0" step="5" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 text-center"><span class="text-xs text-gray-500">分</span></div></div></div><div><label class="block text-xs font-bold text-gray-500 mb-2">分類</label><div class="grid grid-cols-3 gap-2 mb-2"><label class="cursor-pointer"><input type="radio" name="spot-type" value="attraction" class="peer sr-only" checked onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-orange-50 peer-checked:border-orange-500 peer-checked:text-orange-600 transition"><i class="fa-solid fa-camera mb-1"></i><div class="text-[10px] font-bold">景點</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="food" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-red-50 peer-checked:border-red-500 peer-checked:text-red-600 transition"><i class="fa-solid fa-utensils mb-1"></i><div class="text-[10px] font-bold">美食</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="shopping" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-purple-50 peer-checked:border-purple-500 peer-checked:text-purple-600 transition"><i class="fa-solid fa-bag-shopping mb-1"></i><div class="text-[10px] font-bold">購物</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="transit" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-600 transition"><i class="fa-solid fa-train mb-1"></i><div class="text-[10px] font-bold">交通</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="hotel" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-teal-50 peer-checked:border-teal-500 peer-checked:text-teal-600 transition"><i class="fa-solid fa-bed mb-1"></i><div class="text-[10px] font-bold">住宿</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="custom" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-gray-100 peer-checked:border-gray-600 transition"><i class="fa-solid fa-pen mb-1"></i><div class="text-[10px] font-bold">自訂</div></div></label></div><input type="text" id="spot-custom-type" placeholder="請輸入自訂分類" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 hidden text-sm"></div><div class="bg-blue-50 p-3 rounded-xl border border-blue-100"><label class="block text-xs font-bold text-blue-800 mb-2"><i class="fa-solid fa-route mr-1"></i>前往此站的交通 (從上一站)</label><div class="flex gap-2 items-center"><select id="spot-travel-mode" class="flex-1 bg-white border border-blue-200 rounded-lg py-2 px-2 text-sm"><option value="">最佳方式 (自動)</option><option value="driving">🚗 開車/計程車</option><option value="transit">🚇 大眾運輸</option><option value="walking">🚶 步行</option></select><div class="flex items-center gap-1 flex-1"><input type="number" id="spot-travel-h" value="0" min="0" class="w-full bg-white border border-blue-200 rounded-lg py-2 text-center text-sm"><span class="text-[10px]">時</span><input type="number" id="spot-travel-m" value="0" min="0" step="5" class="w-full bg-white border border-blue-200 rounded-lg py-2 text-center text-sm"><span class="text-[10px]">分</span></div></div></div><div><label class="block text-xs font-bold text-gray-500 mb-1">備註 (選填)</label><input type="text" id="spot-note" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3"></div></div><button id="save-spot-btn" onclick="saveSpot()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-md mt-6">儲存景點</button></div></div>
 
         <!-- 底部導航列 -->
         <nav id="bottom-nav" class="bg-white border-t border-gray-200 fixed bottom-0 w-full max-w-[480px] z-50 px-2 pb-safe hidden">
@@ -417,7 +412,7 @@
 
     </div>
 
-    <!-- JavaScript 邏輯 (本機優先 + 雲端整合防護版) -->
+    <!-- JavaScript 邏輯 (本機優先 + 匿名共編版) -->
     <script>
         // ==========================================
         // Firebase 雲端連線設定
@@ -455,9 +450,7 @@
         
         let currentUser = null;
         let currentUserUid = null;
-        let currentUserName = null;
-        let tempSavedUser = null;
-
+        
         // 即時共編：紀錄目前的監聽器
         let unsubscribeSharedTrip = null;
 
@@ -471,7 +464,7 @@
             return new Date(dateVal);
         }
 
-        function safeSetLocal(key, val) { try { localStorage.setItem(key, val); } catch(e) { console.warn('寫入本機暫存被阻擋'); } }
+        function safeSetLocal(key, val) { try { localStorage.setItem(key, val); } catch(e) {} }
         function safeGetLocal(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
         function safeRemoveLocal(key) { try { localStorage.removeItem(key); } catch(e) {} }
 
@@ -487,35 +480,22 @@
             return '🗺️';
         }
 
-        function parseDateLocal(dateStr) {
-            if (!dateStr) return new Date();
-            const parts = dateStr.split('-');
-            return new Date(parts[0], parts[1] - 1, parts[2]);
-        }
-
         // ==========================================
-        // 核心：雙重資料儲存機制 (Local + Cloud + Shared)
+        // 核心：雙重資料儲存機制 (Local + Shared)
         // ==========================================
         function saveData(skipSharedSync = false) {
             safeSetLocal('yolee_trips', JSON.stringify(allTrips));
             
-            if (currentUserUid) {
-                try {
-                    const tripsData = JSON.parse(JSON.stringify(allTrips));
-                    db.collection('users').doc(currentUserUid).set({
-                        trips: tripsData,
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    }, { merge: true }).catch(e => console.warn("Cloud sync failed"));
-
-                    if (!skipSharedSync && currentTripId) {
-                        const currentTrip = allTrips.find(t => String(t.id) === String(currentTripId));
-                        if (currentTrip && currentTrip.shared) {
-                            db.collection('shared_trips').doc(String(currentTripId)).set(
-                                JSON.parse(JSON.stringify(currentTrip))
-                            ).catch(e => console.warn("Shared sync failed", e));
-                        }
-                    }
-                } catch(e) {}
+            // 只要是共編狀態，就推送到雲端 shared_trips
+            if (currentUserUid && !skipSharedSync && currentTripId) {
+                const currentTrip = allTrips.find(t => String(t.id) === String(currentTripId));
+                if (currentTrip && currentTrip.shared) {
+                    try {
+                        db.collection('shared_trips').doc(String(currentTripId)).set(
+                            JSON.parse(JSON.stringify(currentTrip))
+                        ).catch(e => console.warn("Shared sync failed", e));
+                    } catch(e) {}
+                }
             }
         }
 
@@ -531,33 +511,11 @@
             }
         }
 
-        async function loadTripsFromCloud() {
-            if (!currentUserUid) return;
-            try {
-                const docRef = await db.collection('users').doc(currentUserUid).get();
-                if (docRef.exists) {
-                    const cloudData = docRef.data().trips || [];
-                    if (cloudData.length > 0 && allTrips.length === 0) {
-                        allTrips = cloudData.map(trip => { trip.startDate = parseFirestoreDate(trip.startDate); return trip; });
-                        saveData(); 
-                    } else if (allTrips.length > 0) {
-                        saveData(); 
-                    }
-                } else if (allTrips.length > 0) {
-                    saveData(); 
-                }
-            } catch (e) { console.warn("Cloud fetch failed", e); }
-        }
-
         // ==========================================
         // 共編邏輯
         // ==========================================
         async function handleSharedTripLink(sharedTripId) {
-            if (!currentUserUid) {
-                alert("⚠️ 共編功能需要綁定 Google 雲端帳號。\n請先到「設定」頁面綁定帳號後，再次點擊連結加入！");
-                switchScreen('screen-home', 'nav-home');
-                return;
-            }
+            if (!currentUserUid) return; // 需等待匿名登入完成
             try {
                 window.history.replaceState({}, document.title, window.location.pathname);
                 
@@ -572,7 +530,7 @@
                     } else {
                         allTrips.push(tripData);
                     }
-                    saveData(); 
+                    saveData(true); // 只存本地
                     
                     alert(`成功加入共編旅程：${tripData.title}！`);
                     openExistingTrip(tripData.id);
@@ -601,13 +559,14 @@
                         const index = allTrips.findIndex(t => String(t.id) === String(tripId));
                         if (index !== -1) {
                             allTrips[index] = tripData;
-                            saveData(true); 
+                            saveData(true); // 存入本地，略過寫回雲端避免無限迴圈
                             
+                            // 若當前正在查看此旅程，重新渲染畫面 (若沒開 Modal)
                             if (String(currentTripId) === String(tripId)) {
                                 const isEditing = !document.getElementById('add-spot-modal').classList.contains('hidden') || 
                                                   !document.getElementById('edit-trip-modal').classList.contains('hidden');
                                 if (!isEditing) {
-                                    try { loadTripToUI(tripData, true); } catch(e){}
+                                    try { loadTripToUI(tripData); } catch(e){}
                                 }
                             }
                         }
@@ -617,81 +576,45 @@
         }
 
         // ==========================================
-        // 登入流程防護版
+        // 登入流程 (匿名登入)
         // ==========================================
         document.addEventListener("DOMContentLoaded", () => {
             loadDataLocally(); 
 
-            // 防護 1: 確保載入時超時解除 Loader
-            setTimeout(() => {
-                const loader = document.getElementById('global-loader');
-                if (loader && !loader.classList.contains('hidden')) {
-                    loader.classList.add('hidden');
-                    console.warn("Firebase 連線逾時，切換為本機模式。");
-                    if (currentUser) {
-                        const nav = document.getElementById('bottom-nav');
-                        if(nav) nav.classList.remove('hidden');
-                        initApp();
-                        switchScreen('screen-home', 'nav-home');
-                    }
-                }
-            }, 6000);
-
             const savedUser = safeGetLocal('yolee_user');
-            const loginStateNew = document.getElementById('login-state-new');
-            const loginStateRet = document.getElementById('login-state-returning');
-
+            
             if (savedUser) {
                 currentUser = savedUser;
                 document.getElementById('login-nickname').value = currentUser;
                 document.getElementById('welcome-name').innerText = currentUser;
                 document.getElementById('settings-nickname').innerText = currentUser;
                 
-                if(loginStateNew) { loginStateNew.classList.add('hidden'); loginStateNew.classList.remove('block'); }
-                if(loginStateRet) { loginStateRet.classList.remove('hidden'); loginStateRet.classList.add('block'); }
+                document.getElementById('global-loader').classList.remove('hidden');
                 
-                document.getElementById('returning-user-name').innerText = currentUser;
-                document.getElementById('btn-user-name').innerText = currentUser;
+                // 背景匿名登入
+                auth.signInAnonymously().catch(e => {
+                    console.error("Anonymous auth failed", e);
+                    document.getElementById('global-loader').classList.add('hidden');
+                    document.getElementById('bottom-nav').classList.remove('hidden');
+                    initApp();
+                    switchScreen('screen-home', 'nav-home');
+                });
             } else {
-                if(loginStateRet) { loginStateRet.classList.add('hidden'); loginStateRet.classList.remove('block'); }
-                if(loginStateNew) { loginStateNew.classList.remove('hidden'); loginStateNew.classList.add('block'); }
+                switchScreen('screen-login');
+                document.getElementById('bottom-nav').classList.add('hidden');
             }
-            
-            const nav = document.getElementById('bottom-nav');
-            if(nav) nav.classList.add('hidden');
         });
 
         // 監聽 Firebase Auth 狀態
         auth.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUserUid = user.uid;
-                currentUserName = user.displayName || '旅行者';
-                
-                const btnBindGoogle = document.getElementById('btn-bind-google');
-                if(btnBindGoogle) btnBindGoogle.classList.add('hidden');
-                const statusLinked = document.getElementById('status-google-linked');
-                if(statusLinked) statusLinked.classList.remove('hidden');
-                const cloudStatus = document.getElementById('cloud-status-text');
-                if(cloudStatus) cloudStatus.innerHTML = `<i class="fa-solid fa-cloud-check"></i> 雲端備份已連線`;
-                
-                if (user.photoURL) {
-                    const avatarIcon = document.getElementById('settings-avatar-icon');
-                    if(avatarIcon) avatarIcon.classList.add('hidden');
-                    const img = document.getElementById('settings-avatar');
-                    if(img) { img.src = user.photoURL; img.classList.remove('hidden'); }
-                }
-
-                await loadTripsFromCloud();
-                
-                const loader = document.getElementById('global-loader');
-                if(loader) loader.classList.add('hidden');
-                
-                const nav = document.getElementById('bottom-nav');
-                if(nav) nav.classList.remove('hidden');
+                document.getElementById('global-loader').classList.add('hidden');
                 
                 const urlParams = new URLSearchParams(window.location.search);
                 const sharedTripId = urlParams.get('tripId');
                 
+                document.getElementById('bottom-nav').classList.remove('hidden');
                 initApp();
                 
                 if (sharedTripId) {
@@ -699,71 +622,13 @@
                 } else {
                     switchScreen('screen-home', 'nav-home');
                 }
-                
             } else {
                 currentUserUid = null;
-                const loader = document.getElementById('global-loader');
-                if(loader) loader.classList.add('hidden');
-                
-                const btnBindGoogle = document.getElementById('btn-bind-google');
-                if(btnBindGoogle) btnBindGoogle.classList.remove('hidden');
-                const statusLinked = document.getElementById('status-google-linked');
-                if(statusLinked) statusLinked.classList.add('hidden');
-                const cloudStatus = document.getElementById('cloud-status-text');
-                if(cloudStatus) cloudStatus.innerText = "💾 本機安全儲存模式";
+                document.getElementById('global-loader').classList.add('hidden');
             }
         });
 
-        // 登入操作 (加入 WebView 攔截)
-        function loginWithGoogle() {
-            const ua = navigator.userAgent || navigator.vendor || window.opera;
-            if ((ua.indexOf('FBAN') > -1) || (ua.indexOf('FBAV') > -1) || (ua.indexOf('Line') > -1) || (ua.indexOf('Instagram') > -1) || (ua.indexOf('IG') > -1)) {
-                alert("⚠️ 系統偵測到您正在使用通訊軟體的內建瀏覽器。\n\n為了保護您的帳號安全，Google 會阻擋此處的登入動作。\n\n👉 請點擊右上角或右下角的設定按鈕（三個點或指南針），選擇「以預設瀏覽器開啟」或「在 Safari / Chrome 中開啟」後，再進行登入喔！");
-                return;
-            }
-
-            document.getElementById('global-loader').classList.remove('hidden');
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithRedirect(provider);
-        }
-
-        function linkGoogleAccount() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).then(() => {
-                alert("綁定成功！您的資料已開始同步至 YOLEE 雲端。");
-            }).catch(error => {
-                alert("綁定發生錯誤：" + error.message);
-            });
-        }
-
-        function switchLoginStateToNew() {
-            tempSavedUser = currentUser; 
-            const loginStateNew = document.getElementById('login-state-new');
-            const loginStateRet = document.getElementById('login-state-returning');
-            if(loginStateRet) { loginStateRet.classList.add('hidden'); loginStateRet.classList.remove('block'); }
-            if(loginStateNew) { loginStateNew.classList.remove('hidden'); loginStateNew.classList.add('block'); }
-            document.getElementById('login-nickname').value = '';
-            
-            const cancelBtn = document.getElementById('cancel-switch-btn');
-            if(tempSavedUser && cancelBtn) cancelBtn.classList.remove('hidden');
-        }
-
-        function cancelSwitchUser() {
-            currentUser = tempSavedUser;
-            const loginStateNew = document.getElementById('login-state-new');
-            const loginStateRet = document.getElementById('login-state-returning');
-            if(loginStateNew) { loginStateNew.classList.add('hidden'); loginStateNew.classList.remove('block'); }
-            if(loginStateRet) { loginStateRet.classList.remove('hidden'); loginStateRet.classList.add('block'); }
-        }
-
         function handleLocalLogin() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const sharedTripId = urlParams.get('tripId');
-            if (sharedTripId) {
-                alert("⚠️ 這是共編連結！請改用「Google 雲端帳號登入」才能加入朋友的行程喔！");
-                return; 
-            }
-
             const nickname = document.getElementById('login-nickname').value.trim();
             if (!nickname) { alert("請先輸入您的暱稱喔！"); return; }
             currentUser = nickname;
@@ -772,48 +637,31 @@
             document.getElementById('welcome-name').innerText = currentUser;
             document.getElementById('settings-nickname').innerText = currentUser;
             
-            const nav = document.getElementById('bottom-nav');
-            if(nav) nav.classList.remove('hidden');
+            document.getElementById('global-loader').classList.remove('hidden');
             
-            initApp();
-            switchScreen('screen-home', 'nav-home');
-        }
-
-        function handleReturningLogin() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const sharedTripId = urlParams.get('tripId');
-            if (sharedTripId && !currentUserUid) {
-                alert("⚠️ 這是共編連結！請切換使用「Google 雲端帳號登入」才能加入朋友的行程喔！");
-                return; 
-            }
-
-            document.getElementById('welcome-name').innerText = currentUser;
-            document.getElementById('settings-nickname').innerText = currentUser;
-            
-            const nav = document.getElementById('bottom-nav');
-            if(nav) nav.classList.remove('hidden');
-            
-            initApp();
-            switchScreen('screen-home', 'nav-home');
+            // 背景匿名登入
+            auth.signInAnonymously().catch(e => {
+                alert("連線異常，將以單機模式進入");
+                document.getElementById('global-loader').classList.add('hidden');
+                document.getElementById('bottom-nav').classList.remove('hidden');
+                initApp();
+                switchScreen('screen-home', 'nav-home');
+            });
         }
 
         function handleLogout() {
-            if(confirm("確定要登出並清除本機資料嗎？此動作將刪除本設備的所有旅程紀錄。")) {
+            if(confirm("確定要清除所有資料並登出嗎？此動作將刪除本設備的所有旅程紀錄。")) {
                 if (unsubscribeSharedTrip) { try{unsubscribeSharedTrip();}catch(e){} unsubscribeSharedTrip = null; }
                 
                 safeRemoveLocal('yolee_user');
                 safeRemoveLocal('yolee_trips'); 
-                currentUser = null; allTrips = []; tempSavedUser = null;
-                
-                const cancelBtn = document.getElementById('cancel-switch-btn');
-                if(cancelBtn) cancelBtn.classList.add('hidden');
+                currentUser = null; allTrips = []; 
                 
                 const nav = document.getElementById('bottom-nav');
                 if(nav) nav.classList.add('hidden');
                 
-                switchLoginStateToNew();
+                document.getElementById('login-nickname').value = '';
                 switchScreen('screen-login');
-                
                 try { auth.signOut(); } catch(e) {}
             }
         }
@@ -825,22 +673,19 @@
                 safeSetLocal('yolee_user', currentUser);
                 document.getElementById('welcome-name').innerText = currentUser;
                 document.getElementById('settings-nickname').innerText = currentUser;
-                document.getElementById('returning-user-name').innerText = currentUser;
-                document.getElementById('btn-user-name').innerText = currentUser;
                 document.getElementById('settings-edit-nickname').value = '';
                 alert("暱稱修改成功！");
             }
         }
 
         // ==========================================
-        // 基礎渲染與切換 (防護版)
+        // 基礎渲染與切換 
         // ==========================================
         function initApp() {
             try { initCalendarSelectors(); } catch(e){}
             try { renderCalendar(); } catch(e){}
             try { renderHomeDashboard(); } catch(e){}
             try { fetchCurrencyRates(); } catch(e){}
-            try { renderTravelTip(); } catch(e){}
         }
 
         function switchScreen(screenId, navId = null) {
@@ -862,15 +707,13 @@
                 }
                 if (screenId === 'screen-trips-list') { try{ renderHomeTrips(); }catch(e){} }
                 if (screenId === 'screen-home') { try{ renderCalendar(); renderHomeDashboard(); }catch(e){} }
-            } catch(e) {
-                console.error("畫面切換錯誤:", e);
-            }
+            } catch(e) { console.error("畫面切換錯誤:", e); }
         }
 
         // ==========================================
         // 行程表功能區
         // ==========================================
-        function loadTripToUI(trip, isSnapshot = false) { 
+        function loadTripToUI(trip) { 
             document.getElementById('trip-title').innerText = trip.title; 
             document.getElementById('trip-dates').innerHTML = `<i class="fa-regular fa-calendar mr-1"></i>${trip.datesString}`; 
             
@@ -910,7 +753,7 @@
 
         async function openShareModal() { 
             if (!currentUserUid) {
-                alert("請先登入或綁定 Google 雲端帳號才能啟用共編功能！");
+                alert("正在初始化安全連線，請稍後再試！");
                 return;
             }
             const trip = allTrips.find(t => String(t.id) === String(currentTripId));
@@ -926,7 +769,7 @@
                     loadTripToUI(trip); 
                 } catch (error) {
                     console.error(error);
-                    alert("建立共編連結失敗，請檢查網路與權限。");
+                    alert("建立共編連結失敗，請檢查網路。");
                     trip.shared = false;
                     return;
                 }
@@ -1003,11 +846,11 @@
         function renderTimeline() { const trip = allTrips.find(t => String(t.id) === String(currentTripId)); if(!trip) return; const todayItinerary = trip.daysData[currentDayIndex]; if(!todayItinerary) return; const emptyState = document.getElementById('empty-itinerary-state'); const timelineContainer = document.getElementById('itinerary-timeline'); const fab = document.getElementById('fab-add-spot'); const navContainer = document.getElementById('full-day-nav-container'); document.getElementById('empty-day-num').innerText = currentDayIndex + 1; if (todayItinerary.length === 0) { emptyState.classList.remove('hidden'); timelineContainer.classList.add('hidden'); fab.classList.add('hidden'); navContainer.innerHTML = ''; return; } emptyState.classList.add('hidden'); timelineContainer.classList.remove('hidden'); fab.classList.remove('hidden'); if (todayItinerary.length >= 2) { const locations = todayItinerary.map(spot => encodeURIComponent((spot.address ? spot.address : spot.name) + (trip.location && !spot.name.includes(trip.location) ? ", " + trip.location : ""))); const origin = locations[0]; const destination = locations[locations.length - 1]; let waypoints = locations.length > 2 ? "&waypoints=" + locations.slice(1, -1).join('|') : ""; const fullDayUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypoints}`; navContainer.innerHTML = `<button onclick="openMapLink('${fullDayUrl}')" class="px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-lg whitespace-nowrap shadow hover:bg-green-700 flex items-center"><i class="fa-brands fa-google mr-1"></i> 整日導航</button>`; } else { navContainer.innerHTML = ''; } timelineContainer.innerHTML = ''; todayItinerary.forEach((item, index) => { const isLast = index === todayItinerary.length - 1; const prevItem = index > 0 ? todayItinerary[index - 1] : null; const searchKeyword = encodeURIComponent((item.address ? item.address : item.name) + (trip.location && !item.name.includes(trip.location) ? ", " + trip.location : "")); let travelInfoHtml = ""; if (item.travelMode || item.travelTime) { let travelModeIcon = "fa-route"; let travelModeText = "前往"; if(item.travelMode === 'driving') { travelModeIcon = "fa-car"; travelModeText = "開車"; } else if(item.travelMode === 'transit') { travelModeIcon = "fa-train"; travelModeText = "大眾運輸"; } else if(item.travelMode === 'walking') { travelModeIcon = "fa-person-walking"; travelModeText = "步行"; } const timeText = item.travelTime ? `約 ${item.travelTime}` : ""; if (index > 0) travelInfoHtml = `<div class="flex items-center ml-16 pl-4 mb-3 text-xs text-blue-500 font-medium"><i class="fa-solid fa-arrow-down mr-2 opacity-50"></i><span class="bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 flex items-center shadow-sm"><i class="fa-solid ${travelModeIcon} mr-1"></i>${travelModeText} ${timeText}</span></div>`; } let navToHereHtml = ""; if (prevItem) { const prevKeyword = encodeURIComponent((prevItem.address ? prevItem.address : prevItem.name) + (trip.location && !prevItem.name.includes(trip.location) ? ", " + trip.location : "")); let travelModeParam = item.travelMode ? `&travelmode=${item.travelMode}` : ""; navToHereHtml = `<button onclick="openMapLink('https://www.google.com/maps/dir/?api=1&origin=${prevKeyword}&destination=${searchKeyword}${travelModeParam}')" class="flex-1 bg-green-50 text-green-600 text-[10px] py-1.5 rounded font-bold hover:bg-green-100 transition flex items-center justify-center"><i class="fa-solid fa-route mr-1"></i> 導航到此站</button>`; } timelineContainer.innerHTML += `${travelInfoHtml}<div class="relative flex items-start mb-2 group animate-[fadeIn_0.3s_ease-out]"><div class="w-16 shrink-0 text-right pr-4 pt-1"><div class="text-sm font-bold text-gray-800">${item.time}</div><div class="text-[10px] text-gray-400">${item.duration}</div></div><div class="relative flex flex-col items-center mr-4"><div class="w-8 h-8 rounded-full ${item.color} text-white flex items-center justify-center shadow-md z-10"><i class="fa-solid ${item.icon} text-sm"></i></div>${!isLast ? '<div class="w-0.5 h-full bg-gray-200 absolute top-8 bottom-[-20px] z-0"></div>' : ''}</div><div class="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-3 hover:shadow-md transition mb-3"><div class="flex justify-between items-start"><div><span class="text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded font-bold mb-1 inline-block">${item.typeLabel}</span><h3 class="font-bold text-gray-800 text-base leading-tight">${item.name}</h3>${item.address ? `<p class="text-[10px] text-gray-400 mt-1"><i class="fa-solid fa-location-dot mr-1"></i> ${item.address}</p>` : ''}</div><div class="flex gap-2 text-gray-300"><button class="hover:text-blue-500 text-xs transition" onclick="editSpot(${item.id})"><i class="fa-solid fa-pen"></i></button><button class="hover:text-red-500 text-xs transition" onclick="deleteSpot(${item.id})"><i class="fa-solid fa-trash"></i></button></div></div>${item.note ? `<p class="text-xs text-gray-500 mt-2 bg-gray-50 p-1.5 rounded"><i class="fa-regular fa-comment-dots mr-1"></i>${item.note}</p>` : ''}<div class="flex gap-2 mt-3"><button onclick="openMapLink('https://www.google.com/maps/search/?api=1&query=${searchKeyword}')" class="flex-1 bg-sky-50 text-sky-600 text-[10px] py-1.5 rounded font-bold hover:bg-sky-100 transition flex items-center justify-center"><i class="fa-solid fa-map-pin mr-1"></i> 查看地標</button>${navToHereHtml}</div></div></div>`; }); }
 
         function openMapLink(url) { const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer'; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
-        function openShareModal() { document.getElementById('share-modal').classList.remove('hidden'); }
-        function closeShareModal() { document.getElementById('share-modal').classList.add('hidden'); }
-        function copyLink(btn) { btn.innerText = "已複製！"; btn.classList.replace('bg-blue-600', 'bg-green-500'); setTimeout(() => { btn.innerText = "複製"; btn.classList.replace('bg-green-500', 'bg-blue-600'); }, 2000); }
         function toggleCustomType() { document.getElementById('spot-custom-type').classList.toggle('hidden', document.querySelector('input[name="spot-type"]:checked').value !== 'custom'); }
 
+        // ==========================================
+        // AI 嚮導 (含 Google Search 整合)
+        // ==========================================
         function openAiModal() { 
             const chatArea = document.getElementById('ai-chat-area'); const displayDay = currentDayIndex + 1;
             chatArea.innerHTML = `<div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-robot"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-gray-700 w-full max-w-[85%]">你好！我是你的在地嚮導。<br>目前正在為你的<b>「第 ${displayDay} 天」</b>尋找靈感。<br>請告訴我你想找什麼？例如：<br><span class="text-indigo-500 font-medium cursor-pointer" onclick="fillAiPrompt('請推薦附近適合吃午餐的平價美食')">👉 請推薦附近適合吃午餐的平價美食</span><br><span class="text-indigo-500 font-medium cursor-pointer" onclick="fillAiPrompt('推薦近期舉辦的特殊活動或祭典')">👉 推薦近期舉辦的特殊活動或祭典</span><br><hr class="my-2 border-gray-100"><button onclick="openMapLink('https://www.google.com/maps')" class="w-full bg-green-50 text-green-700 py-1.5 rounded-lg text-xs font-bold hover:bg-green-100 transition mt-1 flex items-center justify-center"><i class="fa-brands fa-google mr-1"></i> 直接開啟 Google Maps 搜尋</button></div></div>`;
