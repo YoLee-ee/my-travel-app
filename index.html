@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>YOLEE 世界 - 旅遊規劃</title>
+    
+    <!-- 讓手機辨識為真正的 APP (PWA Meta Tags) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="YOLEE 世界">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="manifest" href='data:application/manifest+json;charset=utf-8,%7B%22name%22%3A%22YOLEE%20%E4%B8%96%E7%95%8C%22%2C%22short_name%22%3A%22YOLEE%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f8fafc%22%2C%22theme_color%22%3A%22%232563eb%22%7D'>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
@@ -11,7 +19,7 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- Firebase SDK (Compat 版本，適合單一檔案網頁) -->
+    <!-- Firebase SDK (Compat 版本) -->
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore-compat.js"></script>
@@ -24,14 +32,11 @@
         .screen.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         input[type="date"]::-webkit-calendar-picker-indicator { opacity: 0.5; cursor: pointer; }
-        
         input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
-
         .calendar-day { min-height: 50px; display: flex; flex-direction: column; align-items: center; padding-top: 4px; font-size: 14px; position: relative; border-radius: 8px; overflow: hidden; }
         .calendar-day.is-today { background-color: #3b82f6; color: white; font-weight: bold; }
         .trip-badge { font-size: 9px; line-height: 1.1; margin-top: 2px; padding: 2px 4px; border-radius: 4px; color: white; width: 95%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; }
-        
         .bg-color-0 { background-color: #0ea5e9; } .bg-color-1 { background-color: #ec4899; } .bg-color-2 { background-color: #10b981; } .bg-color-3 { background-color: #8b5cf6; } .bg-color-4 { background-color: #f59e0b; }
         
         /* 載入動畫 */
@@ -41,7 +46,7 @@
 </head>
 <body class="text-gray-800 antialiased selection:bg-sky-200">
 
-    <!-- 全域載入遮罩 (等待 Firebase 驗證時顯示) -->
+    <!-- 全域載入遮罩 -->
     <div id="global-loader" class="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center">
         <div class="loader mb-4"></div>
         <p class="text-gray-500 font-bold text-sm animate-pulse">正在連線至 YOLEE 雲端...</p>
@@ -50,9 +55,9 @@
     <div class="app-container">
         
         <!-- ========================================== -->
-        <!-- 畫面 0：登入頁面 (Google Login) -->
+        <!-- 畫面 0：登入頁面 -->
         <!-- ========================================== -->
-        <div id="screen-login" class="screen bg-gradient-to-br from-blue-600 to-indigo-900 text-white relative">
+        <div id="screen-login" class="screen active bg-gradient-to-br from-blue-600 to-indigo-900 text-white relative">
             <div class="absolute inset-0 overflow-hidden pointer-events-none">
                 <i class="fa-solid fa-earth-asia absolute -right-20 -top-20 text-[300px] opacity-10 text-white"></i>
                 <i class="fa-solid fa-plane absolute left-10 top-1/4 text-6xl opacity-10 transform -rotate-12"></i>
@@ -66,19 +71,51 @@
                 <p class="text-blue-200 text-sm mb-12 font-medium tracking-widest">您的專屬 AI 旅遊管家</p>
 
                 <div class="w-full max-w-sm bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl p-6 shadow-xl border border-white border-opacity-20 text-center">
-                    <h2 class="font-bold text-lg mb-4">開始您的旅程</h2>
-                    <button onclick="loginWithGoogle()" class="w-full bg-white text-gray-800 font-bold py-3.5 rounded-xl shadow-lg hover:bg-gray-50 hover:scale-[1.02] transition flex items-center justify-center gap-3">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24">
-                            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                        </svg>
-                        使用 Google 帳號登入
-                    </button>
-                    <p class="text-[10px] text-blue-200 mt-4 leading-relaxed">
-                        登入以啟用安全的雲端同步功能，<br>您的所有行程與記帳資料將自動備份。
-                    </p>
+                    
+                    <div id="login-state-new" class="block">
+                        <div class="mb-5 text-left">
+                            <label class="block text-xs font-bold text-blue-200 mb-2 ml-1">請輸入您的顯示暱稱</label>
+                            <input type="text" id="login-nickname" placeholder="例如：旅遊達人 小明" class="w-full bg-white bg-opacity-90 border-none rounded-xl py-3 px-4 text-gray-800 font-bold focus:outline-none focus:ring-2 focus:ring-blue-400 placeholder-gray-400">
+                        </div>
+                        <button onclick="handleLocalLogin()" class="w-full bg-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg hover:bg-blue-400 hover:scale-[1.02] transition flex items-center justify-center gap-2 mb-3">
+                            進入 YOLEE 世界 <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+
+                        <div class="relative flex items-center py-2">
+                            <div class="flex-grow border-t border-white/20"></div>
+                            <span class="flex-shrink-0 mx-3 text-white/50 text-xs">或</span>
+                            <div class="flex-grow border-t border-white/20"></div>
+                        </div>
+
+                        <button onclick="loginWithGoogle()" class="w-full bg-white text-gray-800 font-bold py-3.5 mt-2 rounded-xl shadow-lg hover:bg-gray-50 hover:scale-[1.02] transition flex items-center justify-center gap-3">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                            </svg>
+                            Google 雲端帳號登入
+                        </button>
+
+                        <button id="cancel-switch-btn" onclick="cancelSwitchUser()" class="hidden w-full mt-4 text-xs text-blue-300 hover:text-white underline transition">
+                            返回上一個帳號
+                        </button>
+                    </div>
+
+                    <div id="login-state-returning" class="hidden text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl mx-auto mb-3">
+                            <i class="fa-solid fa-user-check"></i>
+                        </div>
+                        <h2 class="text-xl font-bold mb-1">歡迎回來！</h2>
+                        <p class="text-lg text-blue-200 font-bold mb-6" id="returning-user-name">暱稱</p>
+                        
+                        <button onclick="handleReturningLogin()" class="w-full bg-blue-500 text-white font-bold py-3.5 rounded-xl shadow-lg hover:bg-blue-400 hover:scale-[1.02] transition">
+                            進入 YOLEE 世界
+                        </button>
+                        <button onclick="switchLoginStateToNew()" class="mt-4 text-xs text-blue-300 hover:text-white underline transition">
+                            這不是我，切換帳號
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -106,38 +143,23 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-7 gap-1 text-center mb-2 mt-2">
-                        <div class="text-xs text-red-400 font-bold">日</div><div class="text-xs text-gray-400">一</div><div class="text-xs text-gray-400">二</div>
-                        <div class="text-xs text-gray-400">三</div><div class="text-xs text-gray-400">四</div><div class="text-xs text-gray-400">五</div><div class="text-xs text-gray-400 font-bold">六</div>
+                        <div class="text-xs text-red-400 font-bold">日</div><div class="text-xs text-gray-400">一</div><div class="text-xs text-gray-400">二</div><div class="text-xs text-gray-400">三</div><div class="text-xs text-gray-400">四</div><div class="text-xs text-gray-400">五</div><div class="text-xs text-gray-400 font-bold">六</div>
                     </div>
                     <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
                 </div>
 
-                <!-- 即時匯率 (雙向動態) -->
+                <!-- 即時匯率 -->
                 <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-gray-800 text-lg">即時匯率換算</h3>
-                        <i class="fa-solid fa-coins text-sky-500 text-xl"></i>
-                    </div>
-                    
+                    <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-gray-800 text-lg">即時匯率換算</h3><i class="fa-solid fa-coins text-sky-500 text-xl"></i></div>
                     <div class="flex gap-2 items-center mb-2 bg-gray-50 rounded-xl p-3 border border-gray-100">
                         <div class="flex-1 flex flex-col">
-                            <select id="base-currency-select" onchange="fetchCurrencyRates()" class="text-sm sm:text-base font-bold text-gray-600 hover:text-sky-600 transition bg-transparent outline-none mb-1 cursor-pointer appearance-none">
-                                <option value="TWD" selected>台幣 (TWD) ▼</option><option value="USD">美金 (USD) ▼</option><option value="JPY">日圓 (JPY) ▼</option>
-                                <option value="KRW">韓元 (KRW) ▼</option><option value="EUR">歐元 (EUR) ▼</option><option value="THB">泰銖 (THB) ▼</option>
-                            </select>
-                            <div class="relative">
-                                <input type="number" id="calc-base" oninput="calcCurrency('BASE')" class="w-full bg-white border border-gray-200 rounded-lg py-1.5 px-2 text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-sky-500 text-right" placeholder="輸入金額">
-                            </div>
+                            <select id="base-currency-select" onchange="fetchCurrencyRates()" class="text-sm sm:text-base font-bold text-gray-600 hover:text-sky-600 transition bg-transparent outline-none mb-1 cursor-pointer appearance-none"><option value="TWD" selected>台幣 (TWD) ▼</option><option value="USD">美金 (USD) ▼</option><option value="JPY">日圓 (JPY) ▼</option><option value="KRW">韓元 (KRW) ▼</option><option value="EUR">歐元 (EUR) ▼</option><option value="THB">泰銖 (THB) ▼</option></select>
+                            <div class="relative"><input type="number" id="calc-base" oninput="calcCurrency('BASE')" class="w-full bg-white border border-gray-200 rounded-lg py-1.5 px-2 text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-sky-500 text-right" placeholder="輸入金額"></div>
                         </div>
                         <div class="text-gray-300 text-lg mt-4"><i class="fa-solid fa-right-left"></i></div>
                         <div class="flex-1 flex flex-col">
-                            <select id="target-currency-select" onchange="fetchCurrencyRates()" class="text-sm sm:text-base font-bold text-emerald-600 hover:text-emerald-700 transition bg-transparent outline-none mb-1 cursor-pointer appearance-none text-right">
-                                <option value="JPY" selected>日圓 (JPY) ▼</option><option value="USD">美金 (USD) ▼</option><option value="KRW">韓元 (KRW) ▼</option>
-                                <option value="EUR">歐元 (EUR) ▼</option><option value="THB">泰銖 (THB) ▼</option><option value="TWD">台幣 (TWD) ▼</option>
-                            </select>
-                            <div class="relative">
-                                <input type="number" id="calc-target" oninput="calcCurrency('TARGET')" class="w-full bg-white border border-gray-200 rounded-lg py-1.5 px-2 text-sm font-bold text-emerald-700 outline-none focus:ring-2 focus:ring-emerald-500 text-right" placeholder="換算結果">
-                            </div>
+                            <select id="target-currency-select" onchange="fetchCurrencyRates()" class="text-sm sm:text-base font-bold text-emerald-600 hover:text-emerald-700 transition bg-transparent outline-none mb-1 cursor-pointer appearance-none text-right"><option value="JPY" selected>日圓 (JPY) ▼</option><option value="USD">美金 (USD) ▼</option><option value="KRW">韓元 (KRW) ▼</option><option value="EUR">歐元 (EUR) ▼</option><option value="THB">泰銖 (THB) ▼</option><option value="TWD">台幣 (TWD) ▼</option></select>
+                            <div class="relative"><input type="number" id="calc-target" oninput="calcCurrency('TARGET')" class="w-full bg-white border border-gray-200 rounded-lg py-1.5 px-2 text-sm font-bold text-emerald-700 outline-none focus:ring-2 focus:ring-emerald-500 text-right" placeholder="換算結果"></div>
                         </div>
                     </div>
                     <p id="rate-info-text" class="text-[10px] text-gray-400 text-right mb-2">載入中...</p>
@@ -147,14 +169,10 @@
                 <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex items-start gap-4 relative">
                     <div class="text-3xl text-amber-400 mt-1"><i class="fa-solid fa-lightbulb"></i></div>
                     <div class="flex-1">
-                        <div class="flex justify-between items-center mb-1">
-                            <h3 class="font-bold text-gray-800 text-sm">旅行實用小提示</h3>
-                            <button onclick="renderTravelTip()" class="text-gray-400 hover:text-amber-500 transition"><i class="fa-solid fa-rotate-right text-xs"></i></button>
-                        </div>
+                        <div class="flex justify-between items-center mb-1"><h3 class="font-bold text-gray-800 text-sm">旅行實用小提示</h3><button onclick="renderTravelTip()" class="text-gray-400 hover:text-amber-500 transition"><i class="fa-solid fa-rotate-right text-xs"></i></button></div>
                         <p id="travel-tip-text" class="text-xs text-gray-500 leading-relaxed min-h-[3rem]"></p>
                     </div>
                 </div>
-
             </div>
         </div>
 
@@ -308,13 +326,41 @@
             
             <div class="p-6 space-y-4">
                 <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 mb-6">
-                    <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 text-2xl"><img id="settings-avatar" src="https://ui-avatars.com/api/?name=User&background=random" class="w-full h-full rounded-full hidden"><i id="settings-avatar-icon" class="fa-solid fa-user"></i></div>
-                    <div class="flex-1"><h4 class="font-bold text-gray-800 text-lg" id="settings-nickname">未登入</h4><p class="text-xs text-green-500 font-bold"><i class="fa-solid fa-cloud-check"></i> 雲端同步已啟用</p></div>
+                    <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 text-2xl">
+                        <img id="settings-avatar" src="https://ui-avatars.com/api/?name=User&background=random" class="w-full h-full rounded-full hidden">
+                        <i id="settings-avatar-icon" class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-gray-800 text-lg" id="settings-nickname">未登入</h4>
+                        <p class="text-xs text-gray-500" id="cloud-status-text">💾 本機安全儲存模式</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-6">
+                    <label class="block text-sm font-bold text-gray-700 mb-2">修改顯示暱稱</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="settings-edit-nickname" placeholder="輸入新暱稱" class="flex-1 bg-gray-50 border border-gray-200 rounded-xl py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500">
+                        <button onclick="changeNickname()" class="bg-blue-600 text-white px-4 rounded-xl font-bold text-sm hover:bg-blue-700 transition">儲存</button>
+                    </div>
                 </div>
 
                 <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-                    <button class="w-full px-4 py-3 flex items-center justify-between bg-white hover:bg-gray-50 border-b border-gray-100 transition"><div class="flex items-center gap-3"><i class="fa-solid fa-circle-info text-gray-400 w-5 text-center"></i><span class="text-sm font-medium text-gray-700">關於 YOLEE 世界</span></div><span class="text-xs text-gray-400">v15.0</span></button>
-                    <button onclick="handleLogout()" class="w-full px-4 py-3 flex items-center justify-between bg-red-50 hover:bg-red-100 transition"><div class="flex items-center gap-3"><i class="fa-solid fa-arrow-right-from-bracket text-red-500 w-5 text-center"></i><span class="text-sm font-bold text-red-600">登出系統</span></div></button>
+                    <!-- 綁定 Google 按鈕 -->
+                    <button id="btn-bind-google" onclick="linkGoogleAccount()" class="w-full px-4 py-3 flex items-center justify-between bg-blue-50 hover:bg-blue-100 border-b border-gray-100 transition">
+                        <div class="flex items-center gap-3">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                            <span class="text-sm font-bold text-blue-700">綁定 Google 雲端備份</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-blue-300 text-xs"></i>
+                    </button>
+                    <!-- 已綁定提示 -->
+                    <div id="status-google-linked" class="hidden w-full px-4 py-3 flex items-center justify-between bg-green-50 border-b border-gray-100">
+                        <div class="flex items-center gap-3"><i class="fa-solid fa-cloud-check text-green-500 w-4 text-center"></i><span class="text-sm font-bold text-green-700">雲端備份運作中</span></div>
+                        <i class="fa-solid fa-check text-green-500 text-xs"></i>
+                    </div>
+
+                    <button class="w-full px-4 py-3 flex items-center justify-between bg-white hover:bg-gray-50 border-b border-gray-100 transition"><div class="flex items-center gap-3"><i class="fa-solid fa-circle-info text-gray-400 w-5 text-center"></i><span class="text-sm font-medium text-gray-700">關於 YOLEE 世界</span></div><span class="text-xs text-gray-400">v17.0 (共編版)</span></button>
+                    <button onclick="handleLogout()" class="w-full px-4 py-3 flex items-center justify-between bg-red-50 hover:bg-red-100 transition"><div class="flex items-center gap-3"><i class="fa-solid fa-arrow-right-from-bracket text-red-500 w-5 text-center"></i><span class="text-sm font-bold text-red-600">清除所有資料並登出</span></div></button>
                 </div>
             </div>
         </div>
@@ -358,13 +404,25 @@
         <div id="ai-modal" class="fixed inset-0 bg-black bg-opacity-60 z-[70] hidden flex flex-col justify-end"><div class="flex-1" onclick="closeAiModal()"></div><div class="bg-gray-50 w-full rounded-t-3xl shadow-2xl h-[85vh] flex flex-col"><div class="p-4 bg-white rounded-t-3xl border-b border-gray-100 flex justify-between items-center shrink-0"><h3 class="font-bold text-lg text-indigo-600"><i class="fa-solid fa-robot mr-2"></i>AI 嚮導</h3><button onclick="closeAiModal()" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button></div><div id="ai-chat-area" class="flex-1 overflow-y-auto p-4 space-y-4"></div><div class="p-4 bg-white border-t border-gray-100 shrink-0 pb-safe"><div class="flex gap-2 items-center bg-gray-100 p-1 pl-4 rounded-full"><input type="text" id="ai-prompt-input" placeholder="輸入你想找的景點或活動..." class="flex-1 bg-transparent border-none focus:outline-none text-sm"><button onclick="askAi()" class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></button></div></div></div></div>
 
         <!-- 共編 Modal -->
-        <div id="share-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex justify-center items-end sm:items-center"> <div class="bg-white w-full max-w-md sm:rounded-2xl rounded-t-2xl p-6"> <div class="flex justify-between items-center mb-4"> <h3 class="font-bold text-lg">邀請朋友一起編輯</h3> <button onclick="closeShareModal()" class="text-gray-400"><i class="fa-solid fa-xmark"></i></button> </div> <p class="text-sm text-gray-500 mb-4">將此連結傳給旅伴，他們就能加入這個行程！<br><span class="text-xs text-red-400">*(註：為了隱私，行李與記帳本不會被共用)*</span></p> <div class="flex items-center gap-2 bg-gray-100 p-3 rounded-xl mb-6"> <input type="text" readonly value="https://yolee-travel.vercel.app/" class="bg-transparent flex-1 text-sm text-gray-600 outline-none"> <button onclick="copyLink(this)" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold">複製</button> </div> </div> </div>
+        <div id="share-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex justify-center items-end sm:items-center"> 
+            <div class="bg-white w-full max-w-md sm:rounded-2xl rounded-t-2xl p-6"> 
+                <div class="flex justify-between items-center mb-4"> 
+                    <h3 class="font-bold text-lg">邀請朋友一起編輯</h3> 
+                    <button onclick="closeShareModal()" class="text-gray-400"><i class="fa-solid fa-xmark"></i></button> 
+                </div> 
+                <p class="text-sm text-gray-500 mb-4">將此連結傳給旅伴，他們就能加入這個行程！<br><span class="text-xs text-red-400">*(註：需雙方皆綁定 Google 雲端帳號才能使用共編)*</span></p> 
+                <div class="flex items-center gap-2 bg-gray-100 p-3 rounded-xl mb-6"> 
+                    <input type="text" id="share-link-input" readonly value="產生中..." class="bg-transparent flex-1 text-sm text-gray-600 outline-none"> 
+                    <button onclick="copyLink(this)" class="bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg font-bold">複製</button> 
+                </div> 
+            </div> 
+        </div>
 
         <!-- 新增景點 Modal -->
-        <div id="add-spot-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex justify-center items-end sm:items-center"><div class="bg-white w-full max-w-md sm:rounded-2xl rounded-t-2xl p-6 h-[85vh] sm:h-auto overflow-y-auto"><div class="flex justify-between items-center mb-4"><h3 id="modal-title" class="font-bold text-lg text-gray-800">新增行程點</h3><button onclick="closeAddSpotModal()" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button></div><div class="space-y-4"><div><label class="block text-xs font-bold text-gray-500 mb-1">店名 / 景點名稱 <span class="text-red-500">*</span></label><input type="text" id="spot-name" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 mb-2"><label class="block text-xs font-bold text-gray-500 mb-1">詳細地址 (選填)</label><input type="text" id="spot-address" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3"></div><div class="flex gap-3"><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">開始時間</label><input type="time" id="spot-time" value="09:00" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3"></div><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">停留時間</label><div class="flex items-center gap-1"><input type="number" id="spot-duration-h" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 text-center"><span class="text-xs text-gray-500">時</span><input type="number" id="spot-duration-m" step="5" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 text-center"><span class="text-xs text-gray-500">分</span></div></div></div><div><label class="block text-xs font-bold text-gray-500 mb-2">分類</label><div class="grid grid-cols-3 gap-2 mb-2"><label class="cursor-pointer"><input type="radio" name="spot-type" value="attraction" class="peer sr-only" checked onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-orange-50 peer-checked:border-orange-500 peer-checked:text-orange-600 transition"><i class="fa-solid fa-camera mb-1"></i><div class="text-[10px] font-bold">景點</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="food" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-red-50 peer-checked:border-red-500 peer-checked:text-red-600 transition"><i class="fa-solid fa-utensils mb-1"></i><div class="text-[10px] font-bold">美食</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="shopping" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-purple-50 peer-checked:border-purple-500 peer-checked:text-purple-600 transition"><i class="fa-solid fa-bag-shopping mb-1"></i><div class="text-[10px] font-bold">購物</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="transit" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-600 transition"><i class="fa-solid fa-train mb-1"></i><div class="text-[10px] font-bold">交通</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="hotel" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-teal-50 peer-checked:border-teal-500 peer-checked:text-teal-600 transition"><i class="fa-solid fa-bed mb-1"></i><div class="text-[10px] font-bold">住宿</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="custom" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-gray-100 peer-checked:border-gray-600 transition"><i class="fa-solid fa-pen mb-1"></i><div class="text-[10px] font-bold">自訂</div></div></label></div><input type="text" id="spot-custom-type" placeholder="請輸入自訂分類" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 hidden text-sm"></div><div class="bg-blue-50 p-3 rounded-xl border border-blue-100"><label class="block text-xs font-bold text-blue-800 mb-2"><i class="fa-solid fa-route mr-1"></i>前往此站的交通 (從上一站)</label><div class="flex gap-2 items-center"><select id="spot-travel-mode" class="flex-1 bg-white border border-blue-200 rounded-lg py-2 px-2 text-sm"><option value="">最佳方式 (自動)</option><option value="driving">🚗 開車/計程車</option><option value="transit">🚇 大眾運輸</option><option value="walking">🚶 步行</option></select><div class="flex items-center gap-1 flex-1"><input type="number" id="spot-travel-h" value="0" min="0" class="w-full bg-white border border-blue-200 rounded-lg py-2 text-center text-sm"><span class="text-[10px]">時</span><input type="number" id="spot-travel-m" value="0" min="0" step="5" class="w-full bg-white border border-blue-200 rounded-lg py-2 text-center text-sm"><span class="text-[10px]">分</span></div></div></div><div><label class="block text-xs font-bold text-gray-500 mb-1">備註 (選填)</label><input type="text" id="spot-note" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3"></div></div><button id="save-spot-btn" onclick="saveSpot()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-md mt-6">儲存景點</button></div></div>
+        <div id="add-spot-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex justify-center items-end sm:items-center"><div class="bg-white w-full max-w-md sm:rounded-2xl rounded-t-2xl p-6 h-[85vh] sm:h-auto overflow-y-auto"><div class="flex justify-between items-center mb-4"><h3 id="modal-title" class="font-bold text-lg text-gray-800">新增行程點</h3><button onclick="closeAddSpotModal()" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button></div><div class="space-y-4"><div><label class="block text-xs font-bold text-gray-500 mb-1">店名 / 景點名稱 <span class="text-red-500">*</span></label><input type="text" id="spot-name" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 mb-2"><label class="block text-xs font-bold text-gray-500 mb-1">詳細地址 (選填)</label><input type="text" id="spot-address" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3"></div><div class="flex gap-3"><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">開始時間</label><input type="time" id="spot-time" value="09:00" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3"></div><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">停留時間</label><div class="flex items-center gap-1"><input type="number" id="spot-duration-h" value="1" min="0" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 text-center"><span class="text-xs text-gray-500">時</span><input type="number" id="spot-duration-m" value="0" min="0" step="5" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 text-center"><span class="text-xs text-gray-500">分</span></div></div></div><div><label class="block text-xs font-bold text-gray-500 mb-2">分類</label><div class="grid grid-cols-3 gap-2 mb-2"><label class="cursor-pointer"><input type="radio" name="spot-type" value="attraction" class="peer sr-only" checked onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-orange-50 peer-checked:border-orange-500 peer-checked:text-orange-600 transition"><i class="fa-solid fa-camera mb-1"></i><div class="text-[10px] font-bold">景點</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="food" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-red-50 peer-checked:border-red-500 peer-checked:text-red-600 transition"><i class="fa-solid fa-utensils mb-1"></i><div class="text-[10px] font-bold">美食</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="shopping" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-purple-50 peer-checked:border-purple-500 peer-checked:text-purple-600 transition"><i class="fa-solid fa-bag-shopping mb-1"></i><div class="text-[10px] font-bold">購物</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="transit" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-600 transition"><i class="fa-solid fa-train mb-1"></i><div class="text-[10px] font-bold">交通</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="hotel" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-teal-50 peer-checked:border-teal-500 peer-checked:text-teal-600 transition"><i class="fa-solid fa-bed mb-1"></i><div class="text-[10px] font-bold">住宿</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="custom" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-gray-100 peer-checked:border-gray-600 transition"><i class="fa-solid fa-pen mb-1"></i><div class="text-[10px] font-bold">自訂</div></div></label></div><input type="text" id="spot-custom-type" placeholder="請輸入自訂分類" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 hidden text-sm"></div><div class="bg-blue-50 p-3 rounded-xl border border-blue-100"><label class="block text-xs font-bold text-blue-800 mb-2"><i class="fa-solid fa-route mr-1"></i>前往此站的交通 (從上一站)</label><div class="flex gap-2 items-center"><select id="spot-travel-mode" class="flex-1 bg-white border border-blue-200 rounded-lg py-2 px-2 text-sm"><option value="">最佳方式 (自動)</option><option value="driving">🚗 開車/計程車</option><option value="transit">🚇 大眾運輸</option><option value="walking">🚶 步行</option></select><div class="flex items-center gap-1 flex-1"><input type="number" id="spot-travel-h" value="0" min="0" class="w-full bg-white border border-blue-200 rounded-lg py-2 text-center text-sm"><span class="text-[10px]">時</span><input type="number" id="spot-travel-m" value="0" min="0" step="5" class="w-full bg-white border border-blue-200 rounded-lg py-2 text-center text-sm"><span class="text-[10px]">分</span></div></div></div><div><label class="block text-xs font-bold text-gray-500 mb-1">備註 (選填)</label><input type="text" id="spot-note" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3"></div></div><button id="save-spot-btn" onclick="saveSpot()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-md mt-6">儲存景點</button></div></div>
 
-        <!-- 導航列：首頁最左，設定最右 -->
-        <nav class="bg-white border-t border-gray-200 fixed bottom-0 w-full max-w-[480px] z-50 px-1 pb-safe">
+        <!-- 底部導航列 -->
+        <nav class="bg-white border-t border-gray-200 fixed bottom-0 w-full max-w-[480px] z-50 px-2 pb-safe hidden">
             <div class="flex justify-between items-center h-16">
                 <button id="nav-home" onclick="switchScreen('screen-home', 'nav-home')" class="nav-btn flex-1 flex flex-col items-center justify-center text-sky-600 w-full h-full"><i class="fa-solid fa-house text-xl mb-1"></i><span class="text-[9px] font-bold">首頁</span></button>
                 <button id="nav-trips" onclick="switchScreen('screen-trips-list', 'nav-trips')" class="nav-btn flex-1 flex flex-col items-center justify-center text-gray-400 hover:text-sky-600 transition w-full h-full"><i class="fa-solid fa-plane text-xl mb-1"></i><span class="text-[9px] font-bold">行程</span></button>
@@ -376,10 +434,10 @@
 
     </div>
 
-    <!-- JavaScript 邏輯 (Firebase 雲端整合版) -->
+    <!-- JavaScript 邏輯 (本機優先 + 雲端整合版) -->
     <script>
         // ==========================================
-        // 1. 替換為你的 Firebase Config 鑰匙！
+        // Firebase 雲端連線設定
         // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyAfIViuQhkXACKnAzMB39bj4T3PlXSQ_mg",
@@ -391,13 +449,11 @@
             measurementId: "G-LNHJ00VR0F"
         };
 
-        // 初始化 Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // 系統變數
-        const API_KEY = ""; // Gemini API Key
+        const API_KEY = ""; 
         let globalExchangeRates = { TWD: 1 };
         let activeExchangeRate = 1; 
         
@@ -416,105 +472,339 @@
         
         let currentUserUid = null;
         let currentUserName = null;
+        let tempSavedUser = null;
+
+        // 即時共編：紀錄目前的監聽器，避免重複訂閱
+        let unsubscribeSharedTrip = null;
 
         // ==========================================
-        // 核心：Firebase 登入與雲端資料存取
+        // 核心：雙重資料儲存機制 (Local + Cloud + Shared)
         // ==========================================
         
-        // 監聽使用者登入狀態
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                // 使用者已登入
-                currentUserUid = user.uid;
-                currentUserName = user.displayName || '旅行者';
-                
-                // 更新 UI
-                document.getElementById('welcome-name').innerText = currentUserName;
-                document.getElementById('settings-nickname').innerText = currentUserName;
-                if (user.photoURL) {
-                    document.getElementById('settings-avatar-icon').classList.add('hidden');
-                    const img = document.getElementById('settings-avatar');
-                    img.src = user.photoURL;
-                    img.classList.remove('hidden');
-                }
-                
-                // 從雲端下載資料
-                await loadTripsFromCloud();
-                
-                // 隱藏載入遮罩並跳轉首頁
-                document.getElementById('global-loader').classList.add('hidden');
-                document.querySelectorAll('nav').forEach(n => n.classList.remove('hidden')); 
-                switchScreen('screen-home', 'nav-home');
-                initApp();
-                
-            } else {
-                // 使用者未登入
-                currentUserUid = null;
-                allTrips = [];
-                document.getElementById('global-loader').classList.add('hidden');
-                document.querySelectorAll('nav').forEach(n => n.classList.add('hidden'));
-                switchScreen('screen-login');
-            }
-        });
-
-        // 觸發 Google 登入
-        function loginWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(error => {
-                console.error(error);
-                alert("登入失敗：" + error.message);
-            });
+        // 解析 Firebase Date，避免時區誤差
+        function parseFirestoreDate(dateVal) {
+            if (!dateVal) return new Date();
+            if (dateVal.toDate) return dateVal.toDate(); // Firestore Timestamp
+            if (dateVal.seconds) return new Date(dateVal.seconds * 1000);
+            return new Date(dateVal); // String or JS Date
         }
 
-        // 觸發登出
-        function handleLogout() {
-            if(confirm("確定要登出嗎？")) {
-                auth.signOut();
+        // 永遠優先寫入 LocalStorage，若有登入則推送到雲端
+        function saveData(skipSharedSync = false) {
+            try { localStorage.setItem('yolee_trips', JSON.stringify(allTrips)); } catch(e) {}
+            
+            if (currentUserUid) {
+                try {
+                    const tripsData = JSON.parse(JSON.stringify(allTrips));
+                    // 存入個人資料庫
+                    db.collection('users').doc(currentUserUid).set({
+                        trips: tripsData,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true }).catch(e => console.warn("Cloud sync failed"));
+
+                    // 若目前編輯的旅程是「共編狀態」，同步更新至 shared_trips
+                    if (!skipSharedSync && currentTripId) {
+                        const currentTrip = allTrips.find(t => t.id === currentTripId);
+                        if (currentTrip && currentTrip.shared) {
+                            db.collection('shared_trips').doc(String(currentTripId)).set(
+                                JSON.parse(JSON.stringify(currentTrip))
+                            ).catch(e => console.warn("Shared sync failed", e));
+                        }
+                    }
+                } catch(e) {}
             }
         }
 
-        // 雲端儲存與讀取功能
-        async function loadTripsFromCloud() {
-            if (!currentUserUid) return;
-            try {
-                const docRef = await db.collection('users').doc(currentUserUid).get();
-                if (docRef.exists) {
-                    const data = docRef.data();
-                    allTrips = data.trips || [];
-                    // 將字串日期轉換回 Date 物件
-                    allTrips = allTrips.map(trip => {
+        // 啟動時先讀取本機資料
+        function loadDataLocally() {
+            const data = localStorage.getItem('yolee_trips');
+            if (data) {
+                try {
+                    allTrips = JSON.parse(data).map(trip => {
                         trip.startDate = new Date(trip.startDate);
                         return trip;
                     });
+                } catch(e) { allTrips = []; }
+            }
+        }
+
+        // 處理透過共編連結加入旅程
+        async function handleSharedTripLink(sharedTripId) {
+            if (!currentUserUid) {
+                alert("⚠️ 共編功能需要綁定 Google 雲端帳號。\n請先到「設定」頁面綁定帳號後，再次點擊連結加入！");
+                switchScreen('screen-home', 'nav-home');
+                return;
+            }
+            try {
+                // 清除網址參數保持乾淨
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+                const docRef = await db.collection('shared_trips').doc(sharedTripId).get();
+                if (docRef.exists) {
+                    const tripData = docRef.data();
+                    tripData.startDate = parseFirestoreDate(tripData.startDate);
+                    
+                    const existingIndex = allTrips.findIndex(t => String(t.id) === sharedTripId);
+                    if (existingIndex !== -1) {
+                        allTrips[existingIndex] = tripData;
+                    } else {
+                        allTrips.push(tripData);
+                    }
+                    saveData(); // 同步到自己的雲端
+                    
+                    alert(`成功加入共編旅程：${tripData.title}！`);
+                    openExistingTrip(tripData.id);
                 } else {
-                    allTrips = []; // 新用戶
+                    alert("找不到此共編旅程，可能已被刪除。");
+                    switchScreen('screen-home', 'nav-home');
                 }
             } catch (error) {
-                console.error("載入雲端資料失敗:", error);
-                alert("無法連線至雲端資料庫，請檢查網路。");
+                console.error("加入共編失敗", error);
+                switchScreen('screen-home', 'nav-home');
             }
         }
 
-        async function saveTripsToCloud() {
-            if (!currentUserUid) return;
-            try {
-                // 將資料深拷貝轉為純 JSON，避免儲存失敗
-                const tripsData = JSON.parse(JSON.stringify(allTrips));
-                await db.collection('users').doc(currentUserUid).set({
-                    trips: tripsData,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-            } catch (error) {
-                console.error("儲存雲端資料失敗:", error);
+        // 啟用即時監聽共編旅程
+        function startListeningToSharedTrip(tripId) {
+            if (unsubscribeSharedTrip) {
+                unsubscribeSharedTrip();
+                unsubscribeSharedTrip = null;
+            }
+            const trip = allTrips.find(t => String(t.id) === String(tripId));
+            if (trip && trip.shared && currentUserUid) {
+                unsubscribeSharedTrip = db.collection('shared_trips').doc(String(tripId)).onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const tripData = doc.data();
+                        tripData.startDate = parseFirestoreDate(tripData.startDate);
+                        
+                        const index = allTrips.findIndex(t => String(t.id) === String(tripId));
+                        if (index !== -1) {
+                            allTrips[index] = tripData;
+                            saveData(true); // 存入本地，但略過寫回共編區(避免無限迴圈)
+                            
+                            // 若當前正在查看此旅程，重新渲染畫面 (避免打斷輸入)
+                            if (String(currentTripId) === String(tripId)) {
+                                const isEditing = !document.getElementById('add-spot-modal').classList.contains('hidden') || 
+                                                  !document.getElementById('edit-trip-modal').classList.contains('hidden');
+                                if (!isEditing) {
+                                    loadTripToUI(tripData, true); 
+                                }
+                            }
+                        }
+                    }
+                }, (error) => { console.error("即時監聽失敗:", error); });
             }
         }
 
-        // 替換原本的 LocalStorage 函數，導向雲端
-        function saveTripsToLocal() { saveTripsToCloud(); } 
+        // 監聽 Google 登入狀態
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUserUid = user.uid;
+                currentUserName = user.displayName || '旅行者';
+                
+                // 更新設定頁面 UI 顯示已綁定
+                const btnBindGoogle = document.getElementById('btn-bind-google');
+                if(btnBindGoogle) btnBindGoogle.classList.add('hidden');
+                const statusLinked = document.getElementById('status-google-linked');
+                if(statusLinked) statusLinked.classList.remove('hidden');
+                const cloudStatus = document.getElementById('cloud-status-text');
+                if(cloudStatus) cloudStatus.innerHTML = `<i class="fa-solid fa-cloud-check"></i> 雲端備份已連線`;
+                
+                if (user.photoURL) {
+                    const avatarIcon = document.getElementById('settings-avatar-icon');
+                    if(avatarIcon) avatarIcon.classList.add('hidden');
+                    const img = document.getElementById('settings-avatar');
+                    if(img) { img.src = user.photoURL; img.classList.remove('hidden'); }
+                }
+
+                // 下載雲端資料並與本地合併
+                try {
+                    const docRef = await db.collection('users').doc(currentUserUid).get();
+                    if (docRef.exists) {
+                        const cloudData = docRef.data().trips || [];
+                        if (cloudData.length > 0 && allTrips.length === 0) {
+                            allTrips = cloudData.map(trip => { trip.startDate = parseFirestoreDate(trip.startDate); return trip; });
+                            saveData(); 
+                        } else if (allTrips.length > 0) {
+                            saveData(); 
+                        }
+                    } else if (allTrips.length > 0) {
+                        saveData(); 
+                    }
+                } catch (e) { console.warn("Cloud fetch failed", e); }
+                
+                document.getElementById('global-loader').classList.add('hidden');
+                document.querySelectorAll('nav').forEach(n => n.classList.remove('hidden')); 
+                
+                // 檢查是否帶有共編參數
+                const urlParams = new URLSearchParams(window.location.search);
+                const sharedTripId = urlParams.get('tripId');
+                if (sharedTripId) {
+                    await handleSharedTripLink(sharedTripId);
+                } else {
+                    switchScreen('screen-home', 'nav-home');
+                }
+                initApp();
+                
+            } else {
+                currentUserUid = null;
+                document.getElementById('global-loader').classList.add('hidden');
+                const btnBindGoogle = document.getElementById('btn-bind-google');
+                if(btnBindGoogle) btnBindGoogle.classList.remove('hidden');
+                const statusLinked = document.getElementById('status-google-linked');
+                if(statusLinked) statusLinked.classList.add('hidden');
+                const cloudStatus = document.getElementById('cloud-status-text');
+                if(cloudStatus) cloudStatus.innerText = "💾 本機安全儲存模式";
+            }
+        });
+
+        // 觸發 Google 跳轉登入 
+        function loginWithGoogle() {
+            document.getElementById('global-loader').classList.remove('hidden');
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithRedirect(provider);
+        }
+
+        // 供設定頁面綁定使用
+        function linkGoogleAccount() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).then(() => {
+                alert("綁定成功！您的資料已開始同步至 YOLEE 雲端。");
+            }).catch(error => {
+                alert("綁定發生錯誤：" + error.message);
+            });
+        }
 
         // ==========================================
-        // 其他系統邏輯 (維持原樣)
+        // 登入流程 (支援本地免帳號)
         // ==========================================
+        document.addEventListener("DOMContentLoaded", () => {
+            loadDataLocally(); 
+
+            const savedUser = localStorage.getItem('yolee_user');
+            if (savedUser) {
+                currentUser = savedUser;
+                document.getElementById('login-nickname').value = currentUser;
+                document.getElementById('welcome-name').innerText = currentUser;
+                document.getElementById('settings-nickname').innerText = currentUser;
+                
+                document.getElementById('login-state-new').classList.add('hidden');
+                document.getElementById('login-state-new').classList.remove('block');
+                document.getElementById('login-state-returning').classList.remove('hidden');
+                document.getElementById('login-state-returning').classList.add('block');
+                
+                document.getElementById('returning-user-name').innerText = currentUser;
+                document.getElementById('btn-user-name').innerText = currentUser;
+            } else {
+                document.getElementById('login-state-returning').classList.add('hidden');
+                document.getElementById('login-state-returning').classList.remove('block');
+                document.getElementById('login-state-new').classList.remove('hidden');
+                document.getElementById('login-state-new').classList.add('block');
+            }
+            document.querySelectorAll('nav').forEach(n => n.classList.add('hidden'));
+        });
+
+        function switchLoginStateToNew() {
+            tempSavedUser = currentUser; 
+            document.getElementById('login-state-returning').classList.add('hidden');
+            document.getElementById('login-state-returning').classList.remove('block');
+            document.getElementById('login-state-new').classList.remove('hidden');
+            document.getElementById('login-state-new').classList.add('block');
+            document.getElementById('login-nickname').value = '';
+            if(tempSavedUser) document.getElementById('cancel-switch-btn').classList.remove('hidden');
+        }
+
+        function cancelSwitchUser() {
+            currentUser = tempSavedUser;
+            document.getElementById('login-state-new').classList.add('hidden');
+            document.getElementById('login-state-new').classList.remove('block');
+            document.getElementById('login-state-returning').classList.remove('hidden');
+            document.getElementById('login-state-returning').classList.add('block');
+        }
+
+        function handleLocalLogin() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sharedTripId = urlParams.get('tripId');
+            if (sharedTripId) {
+                alert("⚠️ 這是共編連結！請改用「Google 雲端帳號登入」才能加入朋友的行程喔！");
+                return; // 不清空 URL，讓使用者點擊 Google 登入
+            }
+
+            const nickname = document.getElementById('login-nickname').value.trim();
+            if (!nickname) { alert("請先輸入您的暱稱喔！"); return; }
+            currentUser = nickname;
+            localStorage.setItem('yolee_user', currentUser);
+            
+            document.getElementById('welcome-name').innerText = currentUser;
+            document.getElementById('settings-nickname').innerText = currentUser;
+            
+            document.querySelectorAll('nav').forEach(n => n.classList.remove('hidden')); 
+            switchScreen('screen-home', 'nav-home');
+            initApp();
+        }
+
+        function handleReturningLogin() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sharedTripId = urlParams.get('tripId');
+            if (sharedTripId && !currentUserUid) {
+                alert("⚠️ 這是共編連結！請切換使用「Google 雲端帳號登入」才能加入朋友的行程喔！");
+                return; 
+            }
+
+            document.getElementById('welcome-name').innerText = currentUser;
+            document.getElementById('settings-nickname').innerText = currentUser;
+            document.querySelectorAll('nav').forEach(n => n.classList.remove('hidden')); 
+            switchScreen('screen-home', 'nav-home');
+            initApp();
+        }
+
+        function handleLogout() {
+            if(confirm("確定要清除本機所有資料並登出嗎？此動作將刪除本設備的所有旅程紀錄。")) {
+                if (unsubscribeSharedTrip) { unsubscribeSharedTrip(); unsubscribeSharedTrip = null; }
+                auth.signOut(); 
+                localStorage.removeItem('yolee_user');
+                localStorage.removeItem('yolee_trips'); 
+                currentUser = null; allTrips = []; tempSavedUser = null;
+                document.getElementById('cancel-switch-btn').classList.add('hidden');
+                document.querySelectorAll('nav').forEach(n => n.classList.add('hidden'));
+                
+                switchLoginStateToNew();
+                switchScreen('screen-login');
+            }
+        }
+
+        function changeNickname() {
+            const newName = document.getElementById('settings-edit-nickname').value.trim();
+            if(newName) {
+                currentUser = newName;
+                localStorage.setItem('yolee_user', currentUser);
+                document.getElementById('welcome-name').innerText = currentUser;
+                document.getElementById('settings-nickname').innerText = currentUser;
+                document.getElementById('returning-user-name').innerText = currentUser;
+                document.getElementById('btn-user-name').innerText = currentUser;
+                document.getElementById('settings-edit-nickname').value = '';
+                alert("暱稱修改成功！");
+            }
+        }
+
+        // ==========================================
+        // 其他系統邏輯與渲染
+        // ==========================================
+        function getFlagEmoji(country) {
+            if(!country) return '🗺️';
+            if(country.includes('日本')) return '🇯🇵';
+            if(country.includes('韓國') || country.includes('南韓')) return '🇰🇷';
+            if(country.includes('泰國')) return '🇹🇭';
+            if(country.includes('美國')) return '🇺🇸';
+            if(country.includes('台灣') || country.includes('臺灣')) return '🇹🇼';
+            if(country.includes('英國')) return '🇬🇧';
+            if(country.includes('法國')) return '🇫🇷';
+            return '🗺️';
+        }
+
+        function initApp() {
+            initCalendarSelectors(); renderCalendar(); renderHomeDashboard(); fetchCurrencyRates(); renderTravelTip();
+        }
 
         const travelTips = [
             "打包衣物時可用「捲筒式」收納，不僅節省空間還能減少皺褶喔！",
@@ -536,44 +826,7 @@
 
         function renderTravelTip() {
             const tipEl = document.getElementById('travel-tip-text');
-            if(tipEl) {
-                const randomTip = travelTips[Math.floor(Math.random() * travelTips.length)];
-                tipEl.innerText = randomTip;
-            }
-        }
-
-        function getFlagEmoji(country) {
-            if(!country) return '🗺️';
-            if(country.includes('日本')) return '🇯🇵';
-            if(country.includes('韓國') || country.includes('南韓')) return '🇰🇷';
-            if(country.includes('泰國')) return '🇹🇭';
-            if(country.includes('美國')) return '🇺🇸';
-            if(country.includes('台灣') || country.includes('臺灣')) return '🇹🇼';
-            if(country.includes('英國')) return '🇬🇧';
-            if(country.includes('法國')) return '🇫🇷';
-            return '🗺️';
-        }
-
-        function parseDateLocal(dateStr) {
-            if (!dateStr) return new Date();
-            const parts = dateStr.split('-');
-            return new Date(parts[0], parts[1] - 1, parts[2]);
-        }
-
-        function initApp() {
-            initCalendarSelectors(); renderCalendar(); renderHomeDashboard(); fetchCurrencyRates(); renderTravelTip();
-        }
-
-        function switchScreen(screenId, navId = null) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-
-            if (navId) {
-                document.querySelectorAll('.nav-btn').forEach(btn => { btn.classList.remove('text-sky-600'); btn.classList.add('text-gray-400'); });
-                document.getElementById(navId).classList.remove('text-gray-400'); document.getElementById(navId).classList.add('text-sky-600');
-            }
-            if (screenId === 'screen-trips-list') renderHomeTrips();
-            if (screenId === 'screen-home') { renderCalendar(); renderHomeDashboard(); }
+            if(tipEl) { tipEl.innerText = travelTips[Math.floor(Math.random() * travelTips.length)]; }
         }
 
         async function fetchCurrencyRates() { 
@@ -622,7 +875,6 @@
             for (let i = 1; i <= daysInMonth; i++) {
                 let dateStr = `${year}-${month + 1}-${i}`; let isToday = (today.getDate() === i && today.getMonth() === month && today.getFullYear() === year); let tripsOnDate = tripMap.get(dateStr);
                 let classes = "calendar-day"; if (isToday) classes += " is-today shadow-md"; else if (tripsOnDate) classes += " has-trip shadow-sm"; else classes += " text-gray-700 bg-gray-50 border border-transparent";
-                
                 let badgeHtml = ""; 
                 if (tripsOnDate && tripsOnDate.length > 0) { 
                     const firstTrip = tripsOnDate[0];
@@ -695,11 +947,12 @@
                 id: Date.now(), title: titleInput || `${locationFull}之旅`, location: locationFull,
                 isDomestic, country: countryVal, region: regionVal, displayMain,
                 startDate: tripStartDate, datesString: datesString, totalDays: totalDays, currencies: selectedCurrencies,
-                daysData: Array.from({ length: totalDays }, () => []), todos: [], luggage: [], budget: Array.from({ length: totalDays }, () => [])
+                daysData: Array.from({ length: totalDays }, () => []), todos: [], luggage: [], budget: Array.from({ length: totalDays }, () => []),
+                shared: false
             };
 
             allTrips.push(newTrip); currentTripId = newTrip.id; currentDayIndex = 0;
-            saveTripsToLocal(); 
+            saveData(); 
             
             document.getElementById('add-trip-region-dom').value = ''; document.getElementById('add-trip-country-intl').value = '';
             document.getElementById('add-trip-region-intl').value = ''; document.getElementById('trip-title-input').value = '';
@@ -709,8 +962,7 @@
 
         function openEditTripModal(id) {
             if (id) currentTripId = id; 
-            
-            const trip = allTrips.find(t => t.id === currentTripId);
+            const trip = allTrips.find(t => String(t.id) === String(currentTripId));
             if (!trip) return;
             
             document.querySelector(`input[name="edit-trip-type"][value="${trip.isDomestic ? 'domestic' : 'international'}"]`).checked = true;
@@ -752,7 +1004,7 @@
             const selectedCurrencies = Array.from(document.querySelectorAll('#edit-trip-currencies input[type="checkbox"]:checked')).map(cb => cb.value);
             if(selectedCurrencies.length === 0) selectedCurrencies.push("TWD");
 
-            const trip = allTrips.find(t => t.id === currentTripId);
+            const trip = allTrips.find(t => String(t.id) === String(currentTripId));
             trip.isDomestic = isDomestic; trip.country = countryVal; trip.region = regionVal; trip.displayMain = displayMain;
             trip.location = locationFull; trip.title = title || `${locationFull}之旅`; trip.currencies = selectedCurrencies;
 
@@ -764,7 +1016,7 @@
                 while(trip.daysData.length < trip.totalDays) trip.daysData.push([]);
                 while(trip.budget.length < trip.totalDays) trip.budget.push([]);
             }
-            saveTripsToLocal(); 
+            saveData(); 
             closeEditTripModal(); 
             if(document.getElementById('screen-itinerary').classList.contains('active')) loadTripToUI(trip);
             else renderHomeTrips();
@@ -772,10 +1024,12 @@
 
         function deleteCurrentTrip() {
             if(confirm('確定要刪除這個旅程嗎？此動作無法復原。')) {
-                allTrips = allTrips.filter(t => t.id !== currentTripId);
-                saveTripsToLocal(); 
+                allTrips = allTrips.filter(t => String(t.id) !== String(currentTripId));
+                saveData(); 
                 closeEditTripModal();
                 currentTripId = null; 
+                renderHomeDashboard();
+                renderCalendar();
                 switchScreen('screen-trips-list', 'nav-trips');
             }
         }
@@ -817,35 +1071,98 @@
             if (completedTrips.length === 0) compContainer.innerHTML = '<p class="text-xs text-gray-400">尚無已完成旅程</p>'; else completedTrips.forEach(t => { compContainer.innerHTML += buildCard(t, -999); });
         }
 
-        function loadTripToUI(trip) { 
+        // ==========================================
+        // UI & 行程表 渲染邏輯 (加入共編標籤)
+        // ==========================================
+        function loadTripToUI(trip, isSnapshot = false) { 
             document.getElementById('trip-title').innerText = trip.title; 
             document.getElementById('trip-dates').innerHTML = `<i class="fa-regular fa-calendar mr-1"></i>${trip.datesString}`; 
+            
+            // 標示共編狀態
+            if (trip.shared) {
+                document.getElementById('trip-country-tag').innerHTML = `${getFlagEmoji(trip.country)} ${trip.displayMain} <span class="ml-2 text-green-300 animate-pulse"><i class="fa-solid fa-bolt"></i> 共編中</span>`;
+            } else {
+                document.getElementById('trip-country-tag').innerHTML = `${getFlagEmoji(trip.country)} ${trip.displayMain}`;
+            }
+
             const bgIcon = document.getElementById('theme-icon-bg');
             if(trip.isDomestic) bgIcon.className = "fa-solid fa-car absolute -right-4 -top-4 text-9xl opacity-20 transform -rotate-12";
             else bgIcon.className = "fa-solid fa-plane absolute -right-4 -top-4 text-9xl opacity-20 transform -rotate-12";
-            document.getElementById('trip-country-tag').innerHTML = `${getFlagEmoji(trip.country)} ${trip.displayMain}`;
-            generateDayTabs(trip); renderTimeline(); 
+            
+            generateDayTabs(trip); 
+            renderTimeline(); 
         }
 
-        function openExistingTrip(id) { const trip = allTrips.find(t => t.id === id); if (trip) { currentTripId = trip.id; currentDayIndex = 0; loadTripToUI(trip); switchScreen('screen-itinerary', 'nav-trips'); } }
+        function openExistingTrip(id) { 
+            const trip = allTrips.find(t => String(t.id) === String(id)); 
+            if (trip) { 
+                currentTripId = trip.id; 
+                currentDayIndex = 0; 
+                loadTripToUI(trip); 
+                
+                // 啟動共編監聽
+                if (trip.shared) {
+                    startListeningToSharedTrip(trip.id);
+                } else if (unsubscribeSharedTrip) {
+                    unsubscribeSharedTrip();
+                    unsubscribeSharedTrip = null;
+                }
+
+                switchScreen('screen-itinerary', 'nav-trips'); 
+            } 
+        }
+
         function generateDayTabs(trip) { const tabsContainer = document.getElementById('day-tabs-container'); tabsContainer.innerHTML = ''; let currentDate = new Date(trip.startDate); for (let i = 0; i < trip.totalDays; i++) { const btnClass = i === currentDayIndex ? "px-4 py-2 bg-blue-50 text-blue-600 font-bold rounded-lg whitespace-nowrap shadow-sm border border-blue-100" : "px-4 py-2 text-gray-500 hover:bg-gray-50 rounded-lg whitespace-nowrap transition"; tabsContainer.innerHTML += `<button class="${btnClass}" onclick="switchDay(${i})">第${i+1}天 (${currentDate.getMonth() + 1}/${currentDate.getDate()})</button>`; currentDate.setDate(currentDate.getDate() + 1); } }
-        function switchDay(index) { currentDayIndex = index; generateDayTabs(allTrips.find(t=>t.id===currentTripId)); renderTimeline(); }
+        function switchDay(index) { currentDayIndex = index; generateDayTabs(allTrips.find(t=>String(t.id)===String(currentTripId))); renderTimeline(); }
 
-        function openLuggageSelect() { 
-            switchScreen('screen-luggage-select', 'nav-luggage'); 
-            const c = document.getElementById('luggage-select-container'); c.innerHTML=''; 
-            if (allTrips.length === 0) { 
-                c.innerHTML = `<div class="text-center py-10 bg-white rounded-2xl border border-gray-100 text-gray-400 text-sm"><i class="fa-solid fa-suitcase-rolling text-3xl mb-2"></i><p>您還沒有建立旅程喔！</p></div>`;
-                return; 
+        // 共編 Modal 邏輯
+        async function openShareModal() { 
+            if (!currentUserUid) {
+                alert("請先登入或綁定 Google 雲端帳號才能啟用共編功能！");
+                return;
             }
-            [...allTrips].sort((a,b)=>Math.abs(new Date(a.startDate)-new Date())-Math.abs(new Date(b.startDate)-new Date())).forEach(t=>{ c.innerHTML+=`<div onclick="enterLuggageEdit(${t.id}, 'screen-luggage-select')" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex justify-between items-center cursor-pointer hover:border-sky-300"><div><h4 class="font-bold text-gray-800 text-base">${t.title}</h4><p class="text-xs text-gray-500 mt-1">${t.datesString}</p></div><i class="fa-solid fa-chevron-right text-sky-400"></i></div>`; }); 
+            const trip = allTrips.find(t => String(t.id) === String(currentTripId));
+            if (!trip) return;
+
+            // 如果還沒共編，上傳雲端並標記
+            if (!trip.shared) {
+                try {
+                    trip.shared = true;
+                    saveData(true); // 先存本地
+                    const tripData = JSON.parse(JSON.stringify(trip));
+                    await db.collection('shared_trips').doc(String(trip.id)).set(tripData);
+                    startListeningToSharedTrip(trip.id);
+                    loadTripToUI(trip); // 更新標籤
+                } catch (error) {
+                    console.error(error);
+                    alert("建立共編連結失敗，請檢查網路與權限。");
+                    trip.shared = false;
+                    return;
+                }
+            }
+
+            const shareUrl = window.location.origin + window.location.pathname + '?tripId=' + trip.id;
+            document.getElementById('share-link-input').value = shareUrl;
+            document.getElementById('share-modal').classList.remove('hidden'); 
         }
+        function closeShareModal() { document.getElementById('share-modal').classList.add('hidden'); }
+        function copyLink(btn) { 
+            const input = document.getElementById('share-link-input');
+            input.select();
+            document.execCommand('copy');
+            btn.innerText = "已複製！"; btn.classList.replace('bg-blue-600', 'bg-green-500'); setTimeout(() => { btn.innerText = "複製"; btn.classList.replace('bg-green-500', 'bg-blue-600'); }, 2000); 
+        }
+
+        // ==========================================
+        // 行李清單與待辦事項
+        // ==========================================
+        function openLuggageSelect() { switchScreen('screen-luggage-select', 'nav-luggage'); const c = document.getElementById('luggage-select-container'); c.innerHTML=''; if (allTrips.length === 0) { c.innerHTML = `<div class="text-center py-10 bg-white rounded-2xl border border-gray-100 text-gray-400 text-sm"><i class="fa-solid fa-suitcase-rolling text-3xl mb-2"></i><p>您還沒有建立旅程喔！</p></div>`; return; } [...allTrips].sort((a,b)=>Math.abs(new Date(a.startDate)-new Date())-Math.abs(new Date(b.startDate)-new Date())).forEach(t=>{ c.innerHTML+=`<div onclick="enterLuggageEdit(${t.id}, 'screen-luggage-select')" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex justify-between items-center cursor-pointer hover:border-sky-300"><div><h4 class="font-bold text-gray-800 text-base">${t.title}</h4><p class="text-xs text-gray-500 mt-1">${t.datesString}</p></div><i class="fa-solid fa-chevron-right text-sky-400"></i></div>`; }); }
         function openLuggageScreenFromTrip() { enterLuggageEdit(currentTripId, 'screen-itinerary'); }
-        function enterLuggageEdit(id, src) { currentTripId=id; luggageSourceScreen=src; document.getElementById('luggage-trip-name').innerText=allTrips.find(t=>t.id===id).title; renderLuggage(); switchScreen('screen-luggage-edit', src==='screen-itinerary'?null:'nav-luggage'); }
+        function enterLuggageEdit(id, src) { currentTripId=id; luggageSourceScreen=src; document.getElementById('luggage-trip-name').innerText=allTrips.find(t=>String(t.id)===String(id)).title; renderLuggage(); switchScreen('screen-luggage-edit', src==='screen-itinerary'?null:'nav-luggage'); }
         function goBackFromLuggageEdit() { luggageSourceScreen==='screen-itinerary'?switchScreen('screen-itinerary', 'nav-trips'):openLuggageSelect(); }
         
         function renderLuggage() { 
-            const t = allTrips.find(t => t.id === currentTripId);
+            const t = allTrips.find(t => String(t.id) === String(currentTripId));
             const todoC = document.getElementById('todo-list-container'); const lugC = document.getElementById('luggage-list-container');
             todoC.innerHTML = ''; lugC.innerHTML = '';
             if(!t.todos) t.todos = []; if(!t.luggage) t.luggage = [];
@@ -859,40 +1176,47 @@
                 catHtml += `</div></div>`; lugC.innerHTML += catHtml;
             }
         }
-        function addTodoItem() { const v=document.getElementById('new-todo-input').value.trim(); if(v) { allTrips.find(t=>t.id===currentTripId).todos.push({id:Date.now(), text:v, checked:false}); document.getElementById('new-todo-input').value=''; saveTripsToLocal(); renderLuggage(); } }
-        function toggleTodoItem(id) { const i=allTrips.find(t=>t.id===currentTripId).todos.find(l=>l.id===id); if(i){i.checked=!i.checked; saveTripsToLocal(); renderLuggage();} }
-        function deleteTodoItem(id) { const t=allTrips.find(t=>t.id===currentTripId); t.todos=t.todos.filter(l=>l.id!==id); saveTripsToLocal(); renderLuggage(); }
-        function addLuggageItem() { const v=document.getElementById('new-luggage-input').value.trim(); const cat = document.getElementById('new-luggage-category').value; const qty = parseInt(document.getElementById('new-luggage-qty').value) || 1; if(v) { allTrips.find(t=>t.id===currentTripId).luggage.push({id:Date.now(), category: cat, text:v, checked:false, qty: qty}); document.getElementById('new-luggage-input').value=''; document.getElementById('new-luggage-qty').value=1; saveTripsToLocal(); renderLuggage(); } }
-        function toggleLuggageItem(id) { const i=allTrips.find(t=>t.id===currentTripId).luggage.find(l=>l.id===id); if(i){i.checked=!i.checked; saveTripsToLocal(); renderLuggage();} }
-        function updateLuggageQty(id, d) { const i=allTrips.find(t=>t.id===currentTripId).luggage.find(l=>l.id===id); if(i){i.qty=Math.max(1, (i.qty||1)+d); saveTripsToLocal(); renderLuggage();} }
-        function deleteLuggageItem(id) { const t=allTrips.find(t=>t.id===currentTripId); t.luggage=t.luggage.filter(l=>l.id!==id); saveTripsToLocal(); renderLuggage(); }
+        function addTodoItem() { const v=document.getElementById('new-todo-input').value.trim(); if(v) { allTrips.find(t=>String(t.id)===String(currentTripId)).todos.push({id:Date.now(), text:v, checked:false}); document.getElementById('new-todo-input').value=''; saveData(); renderLuggage(); } }
+        function toggleTodoItem(id) { const i=allTrips.find(t=>String(t.id)===String(currentTripId)).todos.find(l=>l.id===id); if(i){i.checked=!i.checked; saveData(); renderLuggage();} }
+        function deleteTodoItem(id) { const t=allTrips.find(t=>String(t.id)===String(currentTripId)); t.todos=t.todos.filter(l=>l.id!==id); saveData(); renderLuggage(); }
+        function addLuggageItem() { const v=document.getElementById('new-luggage-input').value.trim(); const cat = document.getElementById('new-luggage-category').value; const qty = parseInt(document.getElementById('new-luggage-qty').value) || 1; if(v) { allTrips.find(t=>String(t.id)===String(currentTripId)).luggage.push({id:Date.now(), category: cat, text:v, checked:false, qty: qty}); document.getElementById('new-luggage-input').value=''; document.getElementById('new-luggage-qty').value=1; saveData(); renderLuggage(); } }
+        function toggleLuggageItem(id) { const i=allTrips.find(t=>String(t.id)===String(currentTripId)).luggage.find(l=>l.id===id); if(i){i.checked=!i.checked; saveData(); renderLuggage();} }
+        function updateLuggageQty(id, d) { const i=allTrips.find(t=>String(t.id)===String(currentTripId)).luggage.find(l=>l.id===id); if(i){i.qty=Math.max(1, (i.qty||1)+d); saveData(); renderLuggage();} }
+        function deleteLuggageItem(id) { const t=allTrips.find(t=>String(t.id)===String(currentTripId)); t.luggage=t.luggage.filter(l=>l.id!==id); saveData(); renderLuggage(); }
 
+        // ==========================================
+        // 記帳本系統
+        // ==========================================
         function openBudgetSelect() { switchScreen('screen-budget-select', 'nav-budget'); const container = document.getElementById('budget-select-container'); if (allTrips.length === 0) { container.innerHTML = `<div class="text-center py-10 bg-white rounded-2xl border border-gray-100 text-gray-400 text-sm"><i class="fa-solid fa-coins text-3xl mb-2"></i><p>您還沒有建立旅程喔！</p></div>`; return; } const sortedTrips = [...allTrips].sort((a,b) => Math.abs(new Date(a.startDate) - new Date()) - Math.abs(new Date(b.startDate) - new Date())); container.innerHTML = ''; sortedTrips.forEach(trip => { let totalSum = 0; if(trip.budget) trip.budget.forEach(day => day.forEach(item => { const currency = item.currency || 'TWD'; const rate = globalExchangeRates[currency] || 1; totalSum += Math.round(item.amount / rate); })); container.innerHTML += `<div onclick="enterBudgetEdit(${trip.id}, 'screen-budget-select')" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex justify-between items-center cursor-pointer hover:border-amber-300"><div><h4 class="font-bold text-gray-800 text-base">${trip.title}</h4><p class="text-xs text-gray-500 mt-1">目前總計: <span class="text-amber-600 font-bold">NT$${totalSum}</span></p></div><i class="fa-solid fa-chevron-right text-amber-400"></i></div>`; }); }
         function openBudgetScreenFromTrip() { enterBudgetEdit(currentTripId, 'screen-itinerary'); }
-        function enterBudgetEdit(id, source) { currentTripId = id; budgetSourceScreen = source; currentBudgetDayIndex = 0; const trip = allTrips.find(t => t.id === id); if(!trip.budget) trip.budget = Array.from({ length: trip.totalDays }, () => []); const currencySelect = document.getElementById('new-budget-currency'); currencySelect.innerHTML = ''; const tripCurrencies = trip.currencies && trip.currencies.length > 0 ? trip.currencies : ['TWD']; tripCurrencies.forEach(c => { const name = CURRENCY_NAMES[c] || ''; currencySelect.add(new Option(`${c} ${name}`, c)); }); document.getElementById('budget-trip-name').innerText = trip.title; generateBudgetDayTabs(); renderBudgetList(); switchScreen('screen-budget-edit', source === 'screen-itinerary' ? null : 'nav-budget'); }
+        function enterBudgetEdit(id, source) { currentTripId = id; budgetSourceScreen = source; currentBudgetDayIndex = 0; const trip = allTrips.find(t => String(t.id) === String(id)); if(!trip.budget) trip.budget = Array.from({ length: trip.totalDays }, () => []); const currencySelect = document.getElementById('new-budget-currency'); currencySelect.innerHTML = ''; const tripCurrencies = trip.currencies && trip.currencies.length > 0 ? trip.currencies : ['TWD']; tripCurrencies.forEach(c => { const name = CURRENCY_NAMES[c] || ''; currencySelect.add(new Option(`${c} ${name}`, c)); }); document.getElementById('budget-trip-name').innerText = trip.title; generateBudgetDayTabs(); renderBudgetList(); switchScreen('screen-budget-edit', source === 'screen-itinerary' ? null : 'nav-budget'); }
         function goBackFromBudgetEdit() { budgetSourceScreen === 'screen-itinerary' ? switchScreen('screen-itinerary', 'nav-trips') : openBudgetSelect(); }
-        function generateBudgetDayTabs() { const trip = allTrips.find(t => t.id === currentTripId); const c = document.getElementById('budget-day-tabs-container'); c.innerHTML = ''; for (let i = 0; i < trip.totalDays; i++) { const btnClass = i === currentBudgetDayIndex ? "px-4 py-2 bg-amber-50 text-amber-700 font-bold rounded-lg whitespace-nowrap shadow-sm border border-amber-100" : "px-4 py-2 text-gray-500 hover:bg-gray-50 rounded-lg whitespace-nowrap transition"; c.innerHTML += `<button class="${btnClass}" onclick="switchBudgetDay(${i})">第${i+1}天</button>`; } const summaryClass = currentBudgetDayIndex === trip.totalDays ? "px-4 py-2 bg-indigo-50 text-indigo-700 font-bold rounded-lg whitespace-nowrap shadow-sm border border-indigo-100" : "px-4 py-2 text-gray-500 hover:bg-gray-50 rounded-lg whitespace-nowrap transition"; c.innerHTML += `<button class="${summaryClass}" onclick="switchBudgetDay(${trip.totalDays})"><i class="fa-solid fa-chart-pie mr-1"></i>總覽</button>`; }
+        function generateBudgetDayTabs() { const trip = allTrips.find(t => String(t.id) === String(currentTripId)); const c = document.getElementById('budget-day-tabs-container'); c.innerHTML = ''; for (let i = 0; i < trip.totalDays; i++) { const btnClass = i === currentBudgetDayIndex ? "px-4 py-2 bg-amber-50 text-amber-700 font-bold rounded-lg whitespace-nowrap shadow-sm border border-amber-100" : "px-4 py-2 text-gray-500 hover:bg-gray-50 rounded-lg whitespace-nowrap transition"; c.innerHTML += `<button class="${btnClass}" onclick="switchBudgetDay(${i})">第${i+1}天</button>`; } const summaryClass = currentBudgetDayIndex === trip.totalDays ? "px-4 py-2 bg-indigo-50 text-indigo-700 font-bold rounded-lg whitespace-nowrap shadow-sm border border-indigo-100" : "px-4 py-2 text-gray-500 hover:bg-gray-50 rounded-lg whitespace-nowrap transition"; c.innerHTML += `<button class="${summaryClass}" onclick="switchBudgetDay(${trip.totalDays})"><i class="fa-solid fa-chart-pie mr-1"></i>總覽</button>`; }
         function switchBudgetDay(idx) { currentBudgetDayIndex = idx; generateBudgetDayTabs(); renderBudgetList(); }
         function toggleBudgetCustomCat() { const val = document.getElementById('new-budget-category').value; const input = document.getElementById('new-budget-custom-cat'); if (val === 'custom') input.classList.remove('hidden'); else input.classList.add('hidden'); }
-        function renderBudgetList() { const trip = allTrips.find(t => t.id === currentTripId); const c = document.getElementById('budget-list-container'); c.innerHTML = ''; if (currentBudgetDayIndex === trip.totalDays) { document.getElementById('budget-add-form').classList.add('hidden'); document.getElementById('budget-daily-footer').classList.add('hidden'); document.getElementById('budget-list-header').innerText = "花費總覽與圖表分析"; renderBudgetSummary(trip); return; } document.getElementById('budget-add-form').classList.remove('hidden'); document.getElementById('budget-daily-footer').classList.remove('hidden'); document.getElementById('budget-list-header').innerText = "明細清單"; document.getElementById('budget-current-day-label').innerText = currentBudgetDayIndex + 1; const dayBudget = trip.budget[currentBudgetDayIndex]; let dailyTotalTWD = 0; if (dayBudget.length === 0) { c.innerHTML = '<div class="px-4 py-6 text-center text-gray-400 text-sm">這天還沒有花費紀錄喔！</div>'; } else { dayBudget.forEach(item => { const currency = item.currency || 'TWD'; const rate = globalExchangeRates[currency] || 1; const twdAmount = Math.round(item.amount / rate); dailyTotalTWD += twdAmount; c.innerHTML += `<div class="px-4 py-3 flex justify-between items-center group hover:bg-gray-50 transition"><div class="flex-1"><p class="text-xs text-gray-400 mb-0.5"><span class="bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">${item.category}</span></p><p class="text-sm font-medium text-gray-700">${item.desc}</p></div><div class="flex items-center gap-3"><div class="text-right"><span class="font-bold text-gray-800 text-sm">${currency} ${item.amount}</span>${currency !== 'TWD' ? `<p class="text-[10px] text-gray-400">≈ NT$${twdAmount}</p>` : ''}</div><button onclick="deleteBudgetItem(${item.id})" class="text-gray-300 hover:text-red-500"><i class="fa-solid fa-trash text-xs"></i></button></div></div>`; }); } document.getElementById('budget-daily-total').innerText = "NT$ " + dailyTotalTWD; }
+        function renderBudgetList() { const trip = allTrips.find(t => String(t.id) === String(currentTripId)); const c = document.getElementById('budget-list-container'); c.innerHTML = ''; if (currentBudgetDayIndex === trip.totalDays) { document.getElementById('budget-add-form').classList.add('hidden'); document.getElementById('budget-daily-footer').classList.add('hidden'); document.getElementById('budget-list-header').innerText = "花費總覽與圖表分析"; renderBudgetSummary(trip); return; } document.getElementById('budget-add-form').classList.remove('hidden'); document.getElementById('budget-daily-footer').classList.remove('hidden'); document.getElementById('budget-list-header').innerText = "明細清單"; document.getElementById('budget-current-day-label').innerText = currentBudgetDayIndex + 1; const dayBudget = trip.budget[currentBudgetDayIndex]; let dailyTotalTWD = 0; if (dayBudget.length === 0) { c.innerHTML = '<div class="px-4 py-6 text-center text-gray-400 text-sm">這天還沒有花費紀錄喔！</div>'; } else { dayBudget.forEach(item => { const currency = item.currency || 'TWD'; const rate = globalExchangeRates[currency] || 1; const twdAmount = Math.round(item.amount / rate); dailyTotalTWD += twdAmount; c.innerHTML += `<div class="px-4 py-3 flex justify-between items-center group hover:bg-gray-50 transition"><div class="flex-1"><p class="text-xs text-gray-400 mb-0.5"><span class="bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-bold">${item.category}</span></p><p class="text-sm font-medium text-gray-700">${item.desc}</p></div><div class="flex items-center gap-3"><div class="text-right"><span class="font-bold text-gray-800 text-sm">${currency} ${item.amount}</span>${currency !== 'TWD' ? `<p class="text-[10px] text-gray-400">≈ NT$${twdAmount}</p>` : ''}</div><button onclick="deleteBudgetItem(${item.id})" class="text-gray-300 hover:text-red-500"><i class="fa-solid fa-trash text-xs"></i></button></div></div>`; }); } document.getElementById('budget-daily-total').innerText = "NT$ " + dailyTotalTWD; }
         function renderBudgetSummary(trip) { const c = document.getElementById('budget-list-container'); let catTotals = {}; let dailyTotals = new Array(trip.totalDays).fill(0); let grandTotalTWD = 0; trip.budget.forEach((day, dayIdx) => { day.forEach(item => { const currency = item.currency || 'TWD'; const rate = globalExchangeRates[currency] || 1; const twdAmount = Math.round(item.amount / rate); if(!catTotals[item.category]) catTotals[item.category] = 0; catTotals[item.category] += twdAmount; if(dayIdx < trip.totalDays) dailyTotals[dayIdx] += twdAmount; grandTotalTWD += twdAmount; }); }); if (grandTotalTWD === 0) { c.innerHTML = '<div class="px-4 py-6 text-center text-gray-400 text-sm">這趟旅程還沒有任何花費紀錄。</div>'; return; } let html = `<div class="p-5 text-center bg-amber-50 border-b border-amber-100"><p class="text-xs text-amber-700 font-bold mb-1">旅程總花費 (預估換算)</p><h2 class="text-3xl font-bold text-amber-900">NT$ ${grandTotalTWD}</h2></div><div class="p-4 border-b border-gray-100"><h4 class="font-bold text-sm text-gray-700 mb-3 text-center">分類圓餅圖分析</h4><div class="relative h-48 w-full"><canvas id="budgetPieChart"></canvas></div></div><div class="p-4 space-y-4 border-b border-gray-100"><h4 class="font-bold text-sm text-gray-700 mb-2">各分類詳細金額</h4>`; const sortedCats = Object.entries(catTotals).sort((a,b) => b[1] - a[1]); const colors = ['#3b82f6', '#ec4899', '#f59e0b', '#10b981', '#8b5cf6', '#38bdf8', '#fb7185']; let chartLabels = []; let chartData = []; let chartColors = []; sortedCats.forEach((cat, idx) => { const name = cat[0]; const amount = cat[1]; const pct = Math.round((amount / grandTotalTWD) * 100); const barColorClass = ['bg-blue-500', 'bg-pink-500', 'bg-amber-500', 'bg-emerald-500', 'bg-purple-500', 'bg-sky-400', 'bg-rose-400'][idx % 7]; chartLabels.push(name); chartData.push(amount); chartColors.push(colors[idx % colors.length]); html += `<div><div class="flex justify-between items-end mb-1"><span class="text-sm font-bold text-gray-700">${name}</span><span class="text-xs text-gray-500 font-medium">NT$${amount} <span class="text-[10px]">(${pct}%)</span></span></div><div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden"><div class="${barColorClass} h-2 rounded-full" style="width: ${pct}%"></div></div></div>`; }); html += `</div><div class="p-4"><h4 class="font-bold text-sm text-gray-700 mb-3">每日花費占比</h4><div class="space-y-2">`; dailyTotals.forEach((amt, idx) => { const pct = grandTotalTWD > 0 ? Math.round((amt / grandTotalTWD) * 100) : 0; html += `<div class="flex justify-between text-sm"><span class="text-gray-600">第 ${idx + 1} 天</span><span class="font-bold text-gray-800">NT$${amt} <span class="text-gray-400 text-xs font-normal">(${pct}%)</span></span></div>`; }); html += `</div></div>`; c.innerHTML = html; setTimeout(() => { const ctx = document.getElementById('budgetPieChart').getContext('2d'); if(budgetPieChartInstance) budgetPieChartInstance.destroy(); budgetPieChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: chartLabels, datasets: [{ data: chartData, backgroundColor: chartColors, borderWidth: 1 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } } } } }); }, 100); }
-        function addBudgetItem() { const currency = document.getElementById('new-budget-currency').value; let category = document.getElementById('new-budget-category').value; if(category === 'custom') category = document.getElementById('new-budget-custom-cat').value.trim() || '未分類'; const desc = document.getElementById('new-budget-desc').value.trim() || '未命名項目'; const amount = document.getElementById('new-budget-amount').value; if (!amount) { alert("請至少填寫金額！"); return; } const trip = allTrips.find(t => t.id === currentTripId); trip.budget[currentBudgetDayIndex].push({ id: Date.now(), currency: currency, category: category, desc: desc, amount: amount }); document.getElementById('new-budget-desc').value = ''; document.getElementById('new-budget-amount').value = ''; document.getElementById('new-budget-custom-cat').value = ''; saveTripsToLocal(); renderBudgetList(); }
-        function deleteBudgetItem(id) { const trip = allTrips.find(t => t.id === currentTripId); trip.budget[currentBudgetDayIndex] = trip.budget[currentBudgetDayIndex].filter(i => i.id !== id); saveTripsToLocal(); renderBudgetList(); }
+        function addBudgetItem() { const currency = document.getElementById('new-budget-currency').value; let category = document.getElementById('new-budget-category').value; if(category === 'custom') category = document.getElementById('new-budget-custom-cat').value.trim() || '未分類'; const desc = document.getElementById('new-budget-desc').value.trim() || '未命名項目'; const amount = document.getElementById('new-budget-amount').value; if (!amount) { alert("請至少填寫金額！"); return; } const trip = allTrips.find(t => String(t.id) === String(currentTripId)); trip.budget[currentBudgetDayIndex].push({ id: Date.now(), currency: currency, category: category, desc: desc, amount: amount }); document.getElementById('new-budget-desc').value = ''; document.getElementById('new-budget-amount').value = ''; document.getElementById('new-budget-custom-cat').value = ''; saveData(); renderBudgetList(); }
+        function deleteBudgetItem(id) { const trip = allTrips.find(t => String(t.id) === String(currentTripId)); trip.budget[currentBudgetDayIndex] = trip.budget[currentBudgetDayIndex].filter(i => i.id !== id); saveData(); renderBudgetList(); }
 
+        // ==========================================
+        // 行程點編輯與新增
+        // ==========================================
         function openAddSpotModal() { editingSpotId = null; document.getElementById('modal-title').innerText = "新增行程點"; document.getElementById('save-spot-btn').innerText = "儲存景點"; document.getElementById('add-spot-modal').classList.remove('hidden'); }
-        function closeAddSpotModal() { document.getElementById('add-spot-modal').classList.add('hidden'); document.getElementById('spot-name').value = ''; document.getElementById('spot-address').value = ''; document.getElementById('spot-note').value = ''; document.getElementById('spot-duration-h').value = ''; document.getElementById('spot-duration-m').value = ''; document.getElementById('spot-time').value = '09:00'; document.getElementById('spot-custom-type').value = ''; document.getElementById('spot-custom-type').classList.add('hidden'); document.querySelector('input[name="spot-type"][value="attraction"]').checked = true; document.getElementById('spot-travel-mode').value = ''; document.getElementById('spot-travel-h').value = ''; document.getElementById('spot-travel-m').value = ''; editingSpotId = null; }
+        function closeAddSpotModal() { document.getElementById('add-spot-modal').classList.add('hidden'); document.getElementById('spot-name').value = ''; document.getElementById('spot-address').value = ''; document.getElementById('spot-note').value = ''; document.getElementById('spot-duration-h').value = '1'; document.getElementById('spot-duration-m').value = '0'; document.getElementById('spot-time').value = '09:00'; document.getElementById('spot-custom-type').value = ''; document.getElementById('spot-custom-type').classList.add('hidden'); document.querySelector('input[name="spot-type"][value="attraction"]').checked = true; document.getElementById('spot-travel-mode').value = ''; document.getElementById('spot-travel-h').value = '0'; document.getElementById('spot-travel-m').value = '0'; editingSpotId = null; }
         
-        function saveSpot() { const name = document.getElementById('spot-name').value; const address = document.getElementById('spot-address').value; const time = document.getElementById('spot-time').value; const h = parseInt(document.getElementById('spot-duration-h').value) || 0; const m = parseInt(document.getElementById('spot-duration-m').value) || 0; let durationStr = ""; if(h > 0) durationStr += `${h}小時`; if(m > 0) durationStr += `${m}分`; let type = document.querySelector('input[name="spot-type"]:checked').value; let customTypeStr = type === "custom" ? (document.getElementById('spot-custom-type').value || "自訂") : ""; const travelMode = document.getElementById('spot-travel-mode').value; const travelH = parseInt(document.getElementById('spot-travel-h').value) || 0; const travelM = parseInt(document.getElementById('spot-travel-m').value) || 0; let travelTimeStr = ""; if(travelH > 0) travelTimeStr += `${travelH}小時`; if(travelM > 0) travelTimeStr += `${travelM}分`; if (!name.trim()) { alert("請輸入店名或地點名稱！"); return; } let icon = "fa-location-dot"; let color = "bg-gray-500"; let typeLabel = ""; if (type === "attraction") { icon = "fa-camera"; color = "bg-orange-500"; typeLabel="景點"; } else if (type === "food") { icon = "fa-utensils"; color = "bg-red-500"; typeLabel="美食"; } else if (type === "shopping") { icon = "fa-bag-shopping"; color = "bg-purple-500"; typeLabel="購物"; } else if (type === "transit") { icon = "fa-train-subway"; color = "bg-blue-500"; typeLabel="交通"; } else if (type === "hotel") { icon = "fa-bed"; color = "bg-teal-500"; typeLabel="住宿"; } else { icon = "fa-star"; color = "bg-gray-700"; typeLabel=customTypeStr || "其他"; } const newSpotData = { name, address, time, duration: durationStr || "自由時間", durationH: h, durationM: m, type, customTypeStr, typeLabel, note: document.getElementById('spot-note').value, icon, color, travelMode, travelTime: travelTimeStr, travelH, travelM }; const trip = allTrips.find(t => t.id === currentTripId); let todayItinerary = trip.daysData[currentDayIndex]; if (editingSpotId) { const idx = todayItinerary.findIndex(s => s.id === editingSpotId); if (idx !== -1) todayItinerary[idx] = { ...todayItinerary[idx], ...newSpotData }; } else { todayItinerary.push({ id: Date.now(), ...newSpotData }); } todayItinerary.sort((a, b) => a.time.localeCompare(b.time)); saveTripsToLocal(); renderTimeline(); closeAddSpotModal(); }
-        function editSpot(id) { const trip = allTrips.find(t => t.id === currentTripId); const spot = trip.daysData[currentDayIndex].find(s => s.id === id); if (!spot) return; editingSpotId = id; document.getElementById('spot-name').value = spot.name; document.getElementById('spot-address').value = spot.address || ''; document.getElementById('spot-time').value = spot.time; document.getElementById('spot-duration-h').value = spot.durationH || ''; document.getElementById('spot-duration-m').value = spot.durationM || ''; document.getElementById('spot-note').value = spot.note || ''; document.getElementById('spot-travel-mode').value = spot.travelMode || ''; document.getElementById('spot-travel-h').value = spot.travelH || ''; document.getElementById('spot-travel-m').value = spot.travelM || ''; document.querySelector(`input[name="spot-type"][value="${spot.type}"]`).checked = true; if (spot.type === 'custom') { document.getElementById('spot-custom-type').value = spot.customTypeStr; document.getElementById('spot-custom-type').classList.remove('hidden'); } else { document.getElementById('spot-custom-type').classList.add('hidden'); } document.getElementById('modal-title').innerText = "編輯行程點"; document.getElementById('save-spot-btn').innerText = "更新景點"; document.getElementById('add-spot-modal').classList.remove('hidden'); }
-        function deleteSpot(id) { const trip = allTrips.find(t => t.id === currentTripId); trip.daysData[currentDayIndex] = trip.daysData[currentDayIndex].filter(spot => spot.id !== id); saveTripsToLocal(); renderTimeline(); }
-        function renderTimeline() { const trip = allTrips.find(t => t.id === currentTripId); const todayItinerary = trip.daysData[currentDayIndex]; const emptyState = document.getElementById('empty-itinerary-state'); const timelineContainer = document.getElementById('itinerary-timeline'); const fab = document.getElementById('fab-add-spot'); const navContainer = document.getElementById('full-day-nav-container'); document.getElementById('empty-day-num').innerText = currentDayIndex + 1; if (todayItinerary.length === 0) { emptyState.classList.remove('hidden'); timelineContainer.classList.add('hidden'); fab.classList.add('hidden'); navContainer.innerHTML = ''; return; } emptyState.classList.add('hidden'); timelineContainer.classList.remove('hidden'); fab.classList.remove('hidden'); if (todayItinerary.length >= 2) { const locations = todayItinerary.map(spot => encodeURIComponent((spot.address ? spot.address : spot.name) + (trip.location && !spot.name.includes(trip.location) ? ", " + trip.location : ""))); const origin = locations[0]; const destination = locations[locations.length - 1]; let waypoints = locations.length > 2 ? "&waypoints=" + locations.slice(1, -1).join('|') : ""; const fullDayUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypoints}`; navContainer.innerHTML = `<button onclick="openMapLink('${fullDayUrl}')" class="px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-lg whitespace-nowrap shadow hover:bg-green-700 flex items-center"><i class="fa-brands fa-google mr-1"></i> 整日導航</button>`; } else { navContainer.innerHTML = ''; } timelineContainer.innerHTML = ''; todayItinerary.forEach((item, index) => { const isLast = index === todayItinerary.length - 1; const prevItem = index > 0 ? todayItinerary[index - 1] : null; const searchKeyword = encodeURIComponent((item.address ? item.address : item.name) + (trip.location && !item.name.includes(trip.location) ? ", " + trip.location : "")); let travelInfoHtml = ""; if (item.travelMode || item.travelTime) { let travelModeIcon = "fa-route"; let travelModeText = "前往"; if(item.travelMode === 'driving') { travelModeIcon = "fa-car"; travelModeText = "開車"; } else if(item.travelMode === 'transit') { travelModeIcon = "fa-train"; travelModeText = "大眾運輸"; } else if(item.travelMode === 'walking') { travelModeIcon = "fa-person-walking"; travelModeText = "步行"; } const timeText = item.travelTime ? `約 ${item.travelTime}` : ""; if (index > 0) travelInfoHtml = `<div class="flex items-center ml-16 pl-4 mb-3 text-xs text-blue-500 font-medium"><i class="fa-solid fa-arrow-down mr-2 opacity-50"></i><span class="bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 flex items-center shadow-sm"><i class="fa-solid ${travelModeIcon} mr-1"></i>${travelModeText} ${timeText}</span></div>`; } let navToHereHtml = ""; if (prevItem) { const prevKeyword = encodeURIComponent((prevItem.address ? prevItem.address : prevItem.name) + (trip.location && !prevItem.name.includes(trip.location) ? ", " + trip.location : "")); let travelModeParam = item.travelMode ? `&travelmode=${item.travelMode}` : ""; navToHereHtml = `<button onclick="openMapLink('https://www.google.com/maps/dir/?api=1&origin=${prevKeyword}&destination=${searchKeyword}${travelModeParam}')" class="flex-1 bg-green-50 text-green-600 text-[10px] py-1.5 rounded font-bold hover:bg-green-100 transition flex items-center justify-center"><i class="fa-solid fa-route mr-1"></i> 導航到此站</button>`; } timelineContainer.innerHTML += `${travelInfoHtml}<div class="relative flex items-start mb-2 group animate-[fadeIn_0.3s_ease-out]"><div class="w-16 shrink-0 text-right pr-4 pt-1"><div class="text-sm font-bold text-gray-800">${item.time}</div><div class="text-[10px] text-gray-400">${item.duration}</div></div><div class="relative flex flex-col items-center mr-4"><div class="w-8 h-8 rounded-full ${item.color} text-white flex items-center justify-center shadow-md z-10"><i class="fa-solid ${item.icon} text-sm"></i></div>${!isLast ? '<div class="w-0.5 h-full bg-gray-200 absolute top-8 bottom-[-20px] z-0"></div>' : ''}</div><div class="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-3 hover:shadow-md transition mb-3"><div class="flex justify-between items-start"><div><span class="text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded font-bold mb-1 inline-block">${item.typeLabel}</span><h3 class="font-bold text-gray-800 text-base leading-tight">${item.name}</h3>${item.address ? `<p class="text-[10px] text-gray-400 mt-1"><i class="fa-solid fa-location-dot mr-1"></i> ${item.address}</p>` : ''}</div><div class="flex gap-2 text-gray-300"><button class="hover:text-blue-500 text-xs transition" onclick="editSpot(${item.id})"><i class="fa-solid fa-pen"></i></button><button class="hover:text-red-500 text-xs transition" onclick="deleteSpot(${item.id})"><i class="fa-solid fa-trash"></i></button></div></div>${item.note ? `<p class="text-xs text-gray-500 mt-2 bg-gray-50 p-1.5 rounded"><i class="fa-regular fa-comment-dots mr-1"></i>${item.note}</p>` : ''}<div class="flex gap-2 mt-3"><button onclick="openMapLink('https://www.google.com/maps/search/?api=1&query=${searchKeyword}')" class="flex-1 bg-sky-50 text-sky-600 text-[10px] py-1.5 rounded font-bold hover:bg-sky-100 transition flex items-center justify-center"><i class="fa-solid fa-map-pin mr-1"></i> 查看地標</button>${navToHereHtml}</div></div></div>`; }); }
+        function saveSpot() { const name = document.getElementById('spot-name').value; const address = document.getElementById('spot-address').value; const time = document.getElementById('spot-time').value; const h = parseInt(document.getElementById('spot-duration-h').value) || 0; const m = parseInt(document.getElementById('spot-duration-m').value) || 0; let durationStr = ""; if(h > 0) durationStr += `${h}小時`; if(m > 0) durationStr += `${m}分`; let type = document.querySelector('input[name="spot-type"]:checked').value; let customTypeStr = type === "custom" ? (document.getElementById('spot-custom-type').value || "自訂") : ""; const travelMode = document.getElementById('spot-travel-mode').value; const travelH = parseInt(document.getElementById('spot-travel-h').value) || 0; const travelM = parseInt(document.getElementById('spot-travel-m').value) || 0; let travelTimeStr = ""; if(travelH > 0) travelTimeStr += `${travelH}小時`; if(travelM > 0) travelTimeStr += `${travelM}分`; if (!name.trim()) { alert("請輸入店名或地點名稱！"); return; } let icon = "fa-location-dot"; let color = "bg-gray-500"; let typeLabel = ""; if (type === "attraction") { icon = "fa-camera"; color = "bg-orange-500"; typeLabel="景點"; } else if (type === "food") { icon = "fa-utensils"; color = "bg-red-500"; typeLabel="美食"; } else if (type === "shopping") { icon = "fa-bag-shopping"; color = "bg-purple-500"; typeLabel="購物"; } else if (type === "transit") { icon = "fa-train-subway"; color = "bg-blue-500"; typeLabel="交通"; } else if (type === "hotel") { icon = "fa-bed"; color = "bg-teal-500"; typeLabel="住宿"; } else { icon = "fa-star"; color = "bg-gray-700"; typeLabel=customTypeStr || "其他"; } const newSpotData = { dayIndex: currentDayIndex, name, address, time, duration: durationStr || "自由時間", durationH: h, durationM: m, type, customTypeStr, typeLabel, note: document.getElementById('spot-note').value, icon, color, travelMode, travelTime: travelTimeStr, travelH, travelM }; const trip = allTrips.find(t => String(t.id) === String(currentTripId)); let todayItinerary = trip.daysData[currentDayIndex]; if (editingSpotId) { const idx = todayItinerary.findIndex(s => s.id === editingSpotId); if (idx !== -1) todayItinerary[idx] = { ...todayItinerary[idx], ...newSpotData }; } else { todayItinerary.push({ id: Date.now(), ...newSpotData }); } todayItinerary.sort((a, b) => a.time.localeCompare(b.time)); saveData(); renderTimeline(); closeAddSpotModal(); }
+        function editSpot(id) { const trip = allTrips.find(t => String(t.id) === String(currentTripId)); const spot = trip.daysData[currentDayIndex].find(s => s.id === id); if (!spot) return; editingSpotId = id; document.getElementById('spot-name').value = spot.name; document.getElementById('spot-address').value = spot.address || ''; document.getElementById('spot-time').value = spot.time; document.getElementById('spot-duration-h').value = spot.durationH || 0; document.getElementById('spot-duration-m').value = spot.durationM || 0; document.getElementById('spot-note').value = spot.note || ''; document.getElementById('spot-travel-mode').value = spot.travelMode || ''; document.getElementById('spot-travel-h').value = spot.travelH || 0; document.getElementById('spot-travel-m').value = spot.travelM || 0; document.querySelector(`input[name="spot-type"][value="${spot.type}"]`).checked = true; if (spot.type === 'custom') { document.getElementById('spot-custom-type').value = spot.customTypeStr; document.getElementById('spot-custom-type').classList.remove('hidden'); } else { document.getElementById('spot-custom-type').classList.add('hidden'); } document.getElementById('modal-title').innerText = "編輯行程點"; document.getElementById('save-spot-btn').innerText = "更新景點"; document.getElementById('add-spot-modal').classList.remove('hidden'); }
+        function deleteSpot(id) { const trip = allTrips.find(t => String(t.id) === String(currentTripId)); trip.daysData[currentDayIndex] = trip.daysData[currentDayIndex].filter(spot => spot.id !== id); saveData(); renderTimeline(); }
+        
+        function renderTimeline() { const trip = allTrips.find(t => String(t.id) === String(currentTripId)); const todayItinerary = trip.daysData[currentDayIndex]; const emptyState = document.getElementById('empty-itinerary-state'); const timelineContainer = document.getElementById('itinerary-timeline'); const fab = document.getElementById('fab-add-spot'); const navContainer = document.getElementById('full-day-nav-container'); document.getElementById('empty-day-num').innerText = currentDayIndex + 1; if (todayItinerary.length === 0) { emptyState.classList.remove('hidden'); timelineContainer.classList.add('hidden'); fab.classList.add('hidden'); navContainer.innerHTML = ''; return; } emptyState.classList.add('hidden'); timelineContainer.classList.remove('hidden'); fab.classList.remove('hidden'); if (todayItinerary.length >= 2) { const locations = todayItinerary.map(spot => encodeURIComponent((spot.address ? spot.address : spot.name) + (trip.location && !spot.name.includes(trip.location) ? ", " + trip.location : ""))); const origin = locations[0]; const destination = locations[locations.length - 1]; let waypoints = locations.length > 2 ? "&waypoints=" + locations.slice(1, -1).join('|') : ""; const fullDayUrl = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}${waypoints}`; navContainer.innerHTML = `<button onclick="openMapLink('${fullDayUrl}')" class="px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-lg whitespace-nowrap shadow hover:bg-green-700 flex items-center"><i class="fa-brands fa-google mr-1"></i> 整日導航</button>`; } else { navContainer.innerHTML = ''; } timelineContainer.innerHTML = ''; todayItinerary.forEach((item, index) => { const isLast = index === todayItinerary.length - 1; const prevItem = index > 0 ? todayItinerary[index - 1] : null; const searchKeyword = encodeURIComponent((item.address ? item.address : item.name) + (trip.location && !item.name.includes(trip.location) ? ", " + trip.location : "")); let travelInfoHtml = ""; if (item.travelMode || item.travelTime) { let travelModeIcon = "fa-route"; let travelModeText = "前往"; if(item.travelMode === 'driving') { travelModeIcon = "fa-car"; travelModeText = "開車"; } else if(item.travelMode === 'transit') { travelModeIcon = "fa-train"; travelModeText = "大眾運輸"; } else if(item.travelMode === 'walking') { travelModeIcon = "fa-person-walking"; travelModeText = "步行"; } const timeText = item.travelTime ? `約 ${item.travelTime}` : ""; if (index > 0) travelInfoHtml = `<div class="flex items-center ml-16 pl-4 mb-3 text-xs text-blue-500 font-medium"><i class="fa-solid fa-arrow-down mr-2 opacity-50"></i><span class="bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 flex items-center shadow-sm"><i class="fa-solid ${travelModeIcon} mr-1"></i>${travelModeText} ${timeText}</span></div>`; } let navToHereHtml = ""; if (prevItem) { const prevKeyword = encodeURIComponent((prevItem.address ? prevItem.address : prevItem.name) + (trip.location && !prevItem.name.includes(trip.location) ? ", " + trip.location : "")); let travelModeParam = item.travelMode ? `&travelmode=${item.travelMode}` : ""; navToHereHtml = `<button onclick="openMapLink('https://www.google.com/maps/dir/?api=1&origin=${prevKeyword}&destination=${searchKeyword}${travelModeParam}')" class="flex-1 bg-green-50 text-green-600 text-[10px] py-1.5 rounded font-bold hover:bg-green-100 transition flex items-center justify-center"><i class="fa-solid fa-route mr-1"></i> 導航到此站</button>`; } timelineContainer.innerHTML += `${travelInfoHtml}<div class="relative flex items-start mb-2 group animate-[fadeIn_0.3s_ease-out]"><div class="w-16 shrink-0 text-right pr-4 pt-1"><div class="text-sm font-bold text-gray-800">${item.time}</div><div class="text-[10px] text-gray-400">${item.duration}</div></div><div class="relative flex flex-col items-center mr-4"><div class="w-8 h-8 rounded-full ${item.color} text-white flex items-center justify-center shadow-md z-10"><i class="fa-solid ${item.icon} text-sm"></i></div>${!isLast ? '<div class="w-0.5 h-full bg-gray-200 absolute top-8 bottom-[-20px] z-0"></div>' : ''}</div><div class="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-3 hover:shadow-md transition mb-3"><div class="flex justify-between items-start"><div><span class="text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded font-bold mb-1 inline-block">${item.typeLabel}</span><h3 class="font-bold text-gray-800 text-base leading-tight">${item.name}</h3>${item.address ? `<p class="text-[10px] text-gray-400 mt-1"><i class="fa-solid fa-location-dot mr-1"></i> ${item.address}</p>` : ''}</div><div class="flex gap-2 text-gray-300"><button class="hover:text-blue-500 text-xs transition" onclick="editSpot(${item.id})"><i class="fa-solid fa-pen"></i></button><button class="hover:text-red-500 text-xs transition" onclick="deleteSpot(${item.id})"><i class="fa-solid fa-trash"></i></button></div></div>${item.note ? `<p class="text-xs text-gray-500 mt-2 bg-gray-50 p-1.5 rounded"><i class="fa-regular fa-comment-dots mr-1"></i>${item.note}</p>` : ''}<div class="flex gap-2 mt-3"><button onclick="openMapLink('https://www.google.com/maps/search/?api=1&query=${searchKeyword}')" class="flex-1 bg-sky-50 text-sky-600 text-[10px] py-1.5 rounded font-bold hover:bg-sky-100 transition flex items-center justify-center"><i class="fa-solid fa-map-pin mr-1"></i> 查看地標</button>${navToHereHtml}</div></div></div>`; }); }
 
         function openMapLink(url) { const a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer'; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
-        function openShareModal() { document.getElementById('share-modal').classList.remove('hidden'); }
-        function closeShareModal() { document.getElementById('share-modal').classList.add('hidden'); }
-        function copyLink(btn) { btn.innerText = "已複製！"; btn.classList.replace('bg-blue-600', 'bg-green-500'); setTimeout(() => { btn.innerText = "複製"; btn.classList.replace('bg-green-500', 'bg-blue-600'); }, 2000); }
         function toggleCustomType() { document.getElementById('spot-custom-type').classList.toggle('hidden', document.querySelector('input[name="spot-type"]:checked').value !== 'custom'); }
 
+        // ==========================================
+        // AI 嚮導 (含 Google Search 整合)
+        // ==========================================
         function openAiModal() { 
             const chatArea = document.getElementById('ai-chat-area'); const displayDay = currentDayIndex + 1;
             chatArea.innerHTML = `<div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-robot"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-gray-700 w-full max-w-[85%]">你好！我是你的在地嚮導。<br>目前正在為你的<b>「第 ${displayDay} 天」</b>尋找靈感。<br>請告訴我你想找什麼？例如：<br><span class="text-indigo-500 font-medium cursor-pointer" onclick="fillAiPrompt('請推薦附近適合吃午餐的平價美食')">👉 請推薦附近適合吃午餐的平價美食</span><br><span class="text-indigo-500 font-medium cursor-pointer" onclick="fillAiPrompt('推薦近期舉辦的特殊活動或祭典')">👉 推薦近期舉辦的特殊活動或祭典</span><br><hr class="my-2 border-gray-100"><button onclick="openMapLink('https://www.google.com/maps')" class="w-full bg-green-50 text-green-700 py-1.5 rounded-lg text-xs font-bold hover:bg-green-100 transition mt-1 flex items-center justify-center"><i class="fa-brands fa-google mr-1"></i> 直接開啟 Google Maps 搜尋</button></div></div>`;
@@ -903,13 +1227,16 @@
 
         async function askAi() {
             const inputEl = document.getElementById('ai-prompt-input'); const prompt = inputEl.value.trim(); if (!prompt) return;
-            const chatArea = document.getElementById('ai-chat-area'); const trip = allTrips.find(t => t.id === currentTripId); const contextLocation = trip ? trip.location : "未知地點";
+            const chatArea = document.getElementById('ai-chat-area'); const trip = allTrips.find(t => String(t.id) === String(currentTripId)); const contextLocation = trip ? trip.location : "未知地點";
             chatArea.innerHTML += `<div class="flex gap-3 justify-end animate-[fadeIn_0.3s_ease-out]"><div class="bg-indigo-600 p-3 rounded-2xl rounded-tr-none shadow-sm text-sm text-white max-w-[85%]">${prompt}</div></div>`;
             inputEl.value = '';
+            
             const loadingId = 'loading-' + Date.now();
             chatArea.innerHTML += `<div id="${loadingId}" class="flex gap-3 animate-[fadeIn_0.3s_ease-out]"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-robot"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-gray-700 flex items-center gap-2"><div class="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600"></div> 思考與網頁搜尋中...</div></div>`;
             chatArea.scrollTop = chatArea.scrollHeight; 
+
             const displayDay = currentDayIndex + 1; 
+            
             const systemPrompt = `你是一個專業的在地旅遊嚮導。使用者目前正在安排去「${contextLocation}」的第 ${displayDay} 天行程。請根據使用者的需求推薦景點、餐廳或活動。使用者要求幾個就給幾個（預設推薦3~5個）。你必須嚴格只回傳 JSON 格式的陣列。JSON 格式：[{"name": "地點名稱", "type": "food 或 attraction 或 shopping", "desc": "一句話推薦理由", "time": "建議停留時間"}]`;
 
             try {
@@ -922,42 +1249,37 @@
                         generationConfig: { responseMimeType: "application/json" }
                     })
                 });
+
                 if (!response.ok) throw new Error("API 呼叫失敗");
-                const data = await response.json(); const recommendations = JSON.parse(data.candidates[0].content.parts[0].text);
+
+                const data = await response.json();
+                const recommendations = JSON.parse(data.candidates[0].content.parts[0].text);
                 document.getElementById(loadingId).remove();
+
                 let cardsHtml = '';
                 recommendations.forEach((item) => {
-                    const icon = item.type === 'food' ? 'fa-utensils text-red-500 bg-red-50' : 'fa-camera text-orange-500 bg-orange-50'; const typeLabel = item.type === 'food' ? '美食' : '景點'; const spotDataStr = encodeURIComponent(JSON.stringify({ name: item.name, type: item.type, note: item.desc, durationStr: item.time }));
+                    const icon = item.type === 'food' ? 'fa-utensils text-red-500 bg-red-50' : 'fa-camera text-orange-500 bg-orange-50';
+                    const typeLabel = item.type === 'food' ? '美食' : '景點';
+                    const spotDataStr = encodeURIComponent(JSON.stringify({ name: item.name, type: item.type, note: item.desc, durationStr: item.time }));
                     cardsHtml += `<div class="border border-gray-100 rounded-xl p-3 mb-2 bg-gray-50 flex flex-col"><div class="flex items-center gap-2 mb-2"><div class="w-8 h-8 rounded-full ${icon} flex items-center justify-center shrink-0"><i class="fa-solid ${icon.split(' ')[0]}"></i></div><div class="flex-1"><h4 class="font-bold text-gray-800 text-sm">${item.name}</h4><span class="text-[10px] text-gray-500">${typeLabel} • ${item.time}</span></div></div><p class="text-xs text-gray-600 mb-3 line-clamp-2">${item.desc}</p><button onclick="addAiSpotToTimeline('${spotDataStr}')" class="w-full bg-indigo-50 text-indigo-600 text-xs font-bold py-2 rounded-lg hover:bg-indigo-100 transition"><i class="fa-solid fa-plus mr-1"></i> 加入第 ${displayDay} 天</button></div>`;
                 });
+
                 chatArea.innerHTML += `<div class="flex gap-3 animate-[fadeIn_0.3s_ease-out]"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-robot"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-gray-700 w-full max-w-[85%]"><p class="mb-3 text-indigo-800 font-bold">為您找到以下靈感：</p>${cardsHtml}</div></div>`;
-            } catch (error) { document.getElementById(loadingId).remove(); chatArea.innerHTML += `<div class="flex gap-3 animate-[fadeIn_0.3s_ease-out]"><div class="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-red-600 max-w-[85%]">抱歉，AI 思考時發生錯誤。請確認金鑰或網路連線。</div></div>`; }
+            } catch (error) {
+                document.getElementById(loadingId).remove();
+                chatArea.innerHTML += `<div class="flex gap-3 animate-[fadeIn_0.3s_ease-out]"><div class="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-red-600 max-w-[85%]">抱歉，AI 思考時發生錯誤。請確認金鑰或網路連線。</div></div>`;
+            }
             chatArea.scrollTop = chatArea.scrollHeight;
         }
+
         function addAiSpotToTimeline(encodedData) {
-            const data = JSON.parse(decodeURIComponent(encodedData)); openAddSpotModal(); document.getElementById('spot-name').value = data.name; document.getElementById('spot-note').value = "💡 AI推薦：" + data.note;
-            if (document.querySelector(`input[name="spot-type"][value="${data.type}"]`)) { document.querySelector(`input[name="spot-type"][value="${data.type}"]`).checked = true; } else { document.querySelector(`input[name="spot-type"][value="attraction"]`).checked = true; }
+            const data = JSON.parse(decodeURIComponent(encodedData));
+            openAddSpotModal();
+            document.getElementById('spot-name').value = data.name; document.getElementById('spot-note').value = "💡 AI推薦：" + data.note;
+            if (document.querySelector(`input[name="spot-type"][value="${data.type}"]`)) { document.querySelector(`input[name="spot-type"][value="${data.type}"]`).checked = true; } 
+            else { document.querySelector(`input[name="spot-type"][value="attraction"]`).checked = true; }
             toggleCustomType(); closeAiModal();
         }
     </script>
 </body>
 </html>
-```
-
-### 🔐 關於 Firebase 的最後設定（非常重要！）
-
-雖然程式碼已經上雲端了，但 Firebase 預設是一座「鎖起來的保險箱」。為了讓 APP 能把行程存進去，你需要做最後的兩件事：
-
-**1. 設定資料庫權限 (Firestore Rules)**
-* 回到 Firebase 控制台，左側選單點擊 **「Firestore Database」**，然後點擊「建立資料庫」。
-* 選擇你喜歡的地區（例如 `asia-east1` 台灣），完成建立。
-* 點擊上方的 **「規則 (Rules)」** 頁籤，將裡面的程式碼修改為以下這樣（這代表只有登入的人才能讀寫自己的資料）：
-```javascript
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-  }
-}
