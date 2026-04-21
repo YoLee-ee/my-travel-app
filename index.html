@@ -8,10 +8,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- LZ-String 用於將行程壓縮成短網址 -->
+    <!-- LZ-String 用於將行程壓縮成短網址分享 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+    <!-- Chart.js 仍保留供記帳本圓餅圖使用 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         ::-webkit-scrollbar { display: none; }
@@ -64,7 +64,7 @@
                             建立專屬身分並進入
                         </button>
                         <p class="text-[10px] text-blue-200 mt-4 leading-relaxed text-center">
-                            免密碼單機版，您的資料將安全地儲存於此設備。
+                            免密碼單機版，您的資料將安全地儲存於此設備。<br>您可以隨時分享網址給朋友匯入行程。
                         </p>
                     </div>
 
@@ -116,44 +116,60 @@
                     <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
                 </div>
 
-                <!-- 即時匯率 -->
+                <!-- 即時匯率 (雙向動態) -->
                 <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-bold text-gray-800 text-lg">即時匯率換算</h3>
-                        <select id="currency-select" onchange="fetchCurrencyRates()" class="text-sm font-bold text-sky-600 bg-sky-50 border border-sky-100 rounded-lg px-2 py-1 outline-none">
-                            <option value="JPY">日圓 (JPY)</option>
-                            <option value="KRW">韓元 (KRW)</option>
-                            <option value="THB">泰銖 (THB)</option>
-                            <option value="EUR">歐元 (EUR)</option>
-                            <option value="GBP">英鎊 (GBP)</option>
-                            <option value="USD">美金 (USD)</option>
-                        </select>
+                        <i class="fa-solid fa-coins text-sky-500 text-xl"></i>
                     </div>
                     
-                    <div class="flex gap-2 items-center mb-4 bg-gray-50 rounded-xl p-3 border border-gray-100">
+                    <div class="flex gap-2 items-center bg-gray-50 rounded-xl p-3 border border-gray-100">
                         <div class="flex-1 flex flex-col">
-                            <label class="text-[10px] text-gray-500 font-bold mb-1 ml-1">台幣 (TWD)</label>
+                            <select id="base-currency-select" onchange="fetchCurrencyRates()" class="text-sm sm:text-base font-bold text-gray-600 hover:text-sky-600 transition bg-transparent outline-none mb-1 cursor-pointer appearance-none">
+                                <option value="TWD" selected>台幣 (TWD) ▼</option><option value="USD">美金 (USD) ▼</option><option value="JPY">日圓 (JPY) ▼</option>
+                                <option value="KRW">韓元 (KRW) ▼</option><option value="EUR">歐元 (EUR) ▼</option><option value="THB">泰銖 (THB) ▼</option>
+                            </select>
                             <div class="relative">
-                                <span class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs font-bold">$</span>
-                                <input type="number" id="calc-twd" oninput="calcCurrency('TWD')" class="w-full bg-white border border-gray-200 rounded-lg py-1.5 pl-6 pr-2 text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-sky-500" placeholder="輸入台幣">
+                                <input type="number" id="calc-base" oninput="calcCurrency('BASE')" class="w-full bg-white border border-gray-200 rounded-lg py-1.5 px-2 text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-sky-500 text-right" placeholder="輸入金額">
                             </div>
                         </div>
                         <div class="text-gray-300 text-lg mt-4"><i class="fa-solid fa-right-left"></i></div>
                         <div class="flex-1 flex flex-col">
-                            <label class="text-[10px] text-gray-500 font-bold mb-1 ml-1" id="calc-target-label">目標幣值</label>
+                            <select id="target-currency-select" onchange="fetchCurrencyRates()" class="text-sm sm:text-base font-bold text-emerald-600 hover:text-emerald-700 transition bg-transparent outline-none mb-1 cursor-pointer appearance-none text-right">
+                                <option value="JPY" selected>日圓 (JPY) ▼</option><option value="USD">美金 (USD) ▼</option><option value="KRW">韓元 (KRW) ▼</option>
+                                <option value="EUR">歐元 (EUR) ▼</option><option value="THB">泰銖 (THB) ▼</option><option value="TWD">台幣 (TWD) ▼</option>
+                            </select>
                             <div class="relative">
-                                <span class="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs font-bold">$</span>
-                                <input type="number" id="calc-target" oninput="calcCurrency('TARGET')" class="w-full bg-white border border-gray-200 rounded-lg py-1.5 pl-6 pr-2 text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-emerald-500" placeholder="換算結果">
+                                <input type="number" id="calc-target" oninput="calcCurrency('TARGET')" class="w-full bg-white border border-gray-200 rounded-lg py-1.5 px-2 text-sm font-bold text-emerald-700 outline-none focus:ring-2 focus:ring-emerald-500 text-right" placeholder="換算結果">
                             </div>
                         </div>
                     </div>
-                    <p id="rate-info-text" class="text-[10px] text-gray-400 text-right mb-3">載入中...</p>
+                    <p id="rate-info-text" class="text-[10px] text-gray-400 text-right mt-2">載入中...</p>
+                </div>
 
-                    <div>
-                        <p class="text-xs text-gray-500 font-bold mb-2">近 30 天走勢 (基準模擬)</p>
-                        <div class="w-full h-24"><canvas id="currencyChart"></canvas></div>
+                <!-- 旅行小知識區塊 -->
+                <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex items-start gap-4 relative">
+                    <div class="text-3xl text-amber-400 mt-1"><i class="fa-solid fa-lightbulb"></i></div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-gray-800 text-sm">旅行實用小提示</h3>
+                            <button onclick="renderTravelTip()" class="text-gray-400 hover:text-amber-500 transition"><i class="fa-solid fa-rotate-right text-xs"></i></button>
+                        </div>
+                        <p id="travel-tip-text" class="text-xs text-gray-500 leading-relaxed min-h-[3rem]"></p>
                     </div>
                 </div>
+
+                <!-- YOLEE 的話 區塊 -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-5 shadow-sm border border-blue-100 flex items-start gap-4 relative">
+                    <div class="text-3xl text-blue-500 mt-1"><i class="fa-solid fa-comment-dots"></i></div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="font-bold text-blue-800 text-sm">YOLEE 的話</h3>
+                        </div>
+                        <p class="text-sm text-blue-700 font-medium leading-relaxed min-h-[2rem]">讚讚~</p>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -205,11 +221,8 @@
                         </div>
                     </div>
 
-                    <div class="flex gap-3">
-                        <div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">出發日期</label><input type="date" id="trip-start-date" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500"></div>
-                        <div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">回程日期</label><input type="date" id="trip-end-date" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500"></div>
-                    </div>
-                    <div><label class="block text-xs font-bold text-gray-500 mb-1">旅程名稱 (選填)</label><input type="text" id="trip-title-input" placeholder="自動產生或自行輸入名稱" class="w-full bg-gray-50 border border-gray-200 text-gray-800 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500"></div>
+                    <div class="flex gap-3"><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">出發日期</label><input type="date" id="trip-start-date" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500"></div><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">回程日期</label><input type="date" id="trip-end-date" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500"></div></div>
+                    <div><label class="block text-xs font-bold text-gray-500 mb-1">旅程名稱 (選填)</label><input type="text" id="trip-title-input" placeholder="自動產生或自行輸入名稱" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-sky-500"></div>
                     
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">預計使用幣種</label>
@@ -277,8 +290,8 @@
         <!-- ========================================== -->
         <!-- 畫面 5~7: 行李與記帳選擇頁 -->
         <!-- ========================================== -->
-        <div id="screen-luggage-select" class="screen bg-gray-50"><div class="p-6 pt-10 space-y-6"><h2 class="text-2xl font-bold text-gray-800 mb-2">行李與待辦清單</h2><div id="luggage-select-container" class="space-y-3"></div></div></div>
-        <div id="screen-budget-select" class="screen bg-gray-50"><div class="p-6 pt-10 space-y-6"><h2 class="text-2xl font-bold text-gray-800 mb-2">我的記帳本</h2><div id="budget-select-container" class="space-y-3"></div></div></div>
+        <div id="screen-luggage-select" class="screen bg-gray-50"><div class="p-6 pt-6 space-y-6"><h2 class="text-2xl font-bold text-gray-800 mb-2">行李與待辦清單</h2><div id="luggage-select-container" class="space-y-3"></div></div></div>
+        <div id="screen-budget-select" class="screen bg-gray-50"><div class="p-6 pt-6 space-y-6"><h2 class="text-2xl font-bold text-gray-800 mb-2">我的記帳本</h2><div id="budget-select-container" class="space-y-3"></div></div></div>
 
         <!-- 行李/待辦編輯 -->
         <div id="screen-luggage-edit" class="screen bg-gray-50">
@@ -312,7 +325,7 @@
             <div class="p-6 space-y-4">
                 <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 mb-6">
                     <div class="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 text-2xl"><i class="fa-solid fa-user"></i></div>
-                    <div class="flex-1"><h4 class="font-bold text-gray-800 text-lg" id="settings-nickname">未登入</h4><p class="text-xs text-green-500 font-bold"><i class="fa-solid fa-shield-halved"></i> 本機安全儲存模式</p></div>
+                    <div class="flex-1"><h4 class="font-bold text-gray-800 text-lg" id="settings-nickname">未登入</h4><p class="text-xs text-green-500 font-bold"><i class="fa-solid fa-shield-halved"></i> 純單機安全模式</p></div>
                 </div>
 
                 <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-6">
@@ -324,8 +337,8 @@
                 </div>
 
                 <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-                    <button class="w-full px-4 py-3 flex items-center justify-between bg-white hover:bg-gray-50 border-b border-gray-100 transition"><div class="flex items-center gap-3"><i class="fa-solid fa-circle-info text-gray-400 w-5 text-center"></i><span class="text-sm font-medium text-gray-700">關於 YOLEE 世界</span></div><span class="text-xs text-gray-400">v32.0 (單機分享修復版)</span></button>
-                    <button onclick="handleLogout()" class="w-full px-4 py-3 flex items-center justify-between bg-red-50 hover:bg-red-100 transition"><div class="flex items-center gap-3"><i class="fa-solid fa-arrow-right-from-bracket text-red-500 w-5 text-center"></i><span class="text-sm font-bold text-red-600">清除所有資料並登出</span></div></button>
+                    <button class="w-full px-4 py-3 flex items-center justify-between bg-white hover:bg-gray-50 border-b border-gray-100 transition"><div class="flex items-center gap-3"><i class="fa-solid fa-circle-info text-gray-400 w-5 text-center"></i><span class="text-sm font-medium text-gray-700">關於 YOLEE 世界</span></div><span class="text-xs text-gray-400">v33.0 (分享修復版)</span></button>
+                    <button onclick="handleLogout()" class="w-full px-4 py-3 flex items-center justify-between bg-red-50 hover:bg-red-100 transition"><div class="flex items-center gap-3"><i class="fa-solid fa-arrow-right-from-bracket text-red-500 w-5 text-center"></i><span class="text-sm font-bold text-red-600">清除本機資料並登出</span></div></button>
                 </div>
             </div>
         </div>
@@ -366,7 +379,7 @@
         </div>
 
         <!-- AI Modal -->
-        <div id="ai-modal" class="fixed inset-0 bg-black bg-opacity-60 z-[70] hidden flex flex-col justify-end"><div class="flex-1" onclick="closeAiModal()"></div><div class="bg-gray-50 w-full rounded-t-3xl shadow-2xl h-[85vh] flex flex-col"><div class="p-4 bg-white rounded-t-3xl border-b border-gray-100 flex justify-between items-center shrink-0"><h3 class="font-bold text-lg text-indigo-600"><i class="fa-solid fa-robot mr-2"></i>AI 嚮導</h3><button onclick="closeAiModal()" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button></div><div id="ai-chat-area" class="flex-1 overflow-y-auto p-4 space-y-4"></div><div class="p-4 bg-white border-t border-gray-100 shrink-0 pb-safe"><div class="flex gap-2 items-center bg-gray-100 p-1 pl-4 rounded-full"><input type="text" id="ai-prompt-input" placeholder="輸入你想找的景點或活動..." class="flex-1 bg-transparent border-none focus:outline-none text-sm"><button onclick="askAi()" class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center hover:bg-indigo-700 transition"><i class="fa-solid fa-paper-plane"></i></button></div></div></div></div>
+        <div id="ai-modal" class="fixed inset-0 bg-black bg-opacity-60 z-[70] hidden flex flex-col justify-end"><div class="flex-1" onclick="closeAiModal()"></div><div class="bg-gray-50 w-full rounded-t-3xl shadow-2xl h-[85vh] flex flex-col"><div class="p-4 bg-white rounded-t-3xl border-b border-gray-100 flex justify-between items-center shrink-0"><h3 class="font-bold text-lg text-indigo-600"><i class="fa-solid fa-robot mr-2"></i>AI 嚮導</h3><button onclick="closeAiModal()" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button></div><div id="ai-chat-area" class="flex-1 overflow-y-auto p-4 space-y-4"></div><div class="p-4 bg-white border-t border-gray-100 shrink-0 pb-safe"><div class="flex gap-2 items-center bg-gray-100 p-1 pl-4 rounded-full"><input type="text" id="ai-prompt-input" placeholder="輸入你想找的景點或活動..." class="flex-1 bg-transparent border-none focus:outline-none text-sm"><button onclick="askAi()" class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></button></div></div></div></div>
 
         <!-- 壓縮分享 Modal -->
         <div id="share-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex justify-center items-end sm:items-center"> 
@@ -375,7 +388,7 @@
                     <h3 class="font-bold text-lg text-blue-600"><i class="fa-solid fa-share-nodes mr-1"></i> 分享此行程</h3> 
                     <button onclick="closeShareModal()" class="text-gray-400 hover:text-gray-600 transition"><i class="fa-solid fa-xmark text-xl"></i></button> 
                 </div> 
-                <p class="text-sm text-gray-500 mb-4">將此連結傳給旅伴，系統會將此行程<strong class="text-gray-700">拷貝一份</strong>到對方的手機中！<br><span class="text-xs text-red-400">*(註：為了隱私，您的行李與記帳本紀錄不會被分享出去)*</span></p> 
+                <p class="text-sm text-gray-500 mb-4">將此連結傳給旅伴，系統會將此行程<strong class="text-gray-700">拷貝一份</strong>到對方的手機中！<br><span class="text-xs text-red-400">*(註：為了隱私，您的行李與記帳本紀錄不會被拷貝過去)*</span></p> 
                 <div class="flex items-center gap-2 bg-gray-100 p-3 rounded-xl mb-2"> 
                     <input type="text" id="share-link-input" readonly value="產生中..." class="bg-transparent flex-1 text-sm text-gray-600 outline-none"> 
                     <button onclick="copyLink(this)" class="bg-blue-600 text-white text-xs px-4 py-2 rounded-lg font-bold hover:bg-blue-700 transition">複製連結</button> 
@@ -384,7 +397,64 @@
         </div>
 
         <!-- 新增景點 Modal -->
-        <div id="add-spot-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex justify-center items-end sm:items-center"><div class="bg-white w-full max-w-md sm:rounded-2xl rounded-t-2xl p-6 h-[85vh] sm:h-auto overflow-y-auto"><div class="flex justify-between items-center mb-4"><h3 id="modal-title" class="font-bold text-lg text-gray-800">新增行程點</h3><button onclick="closeAddSpotModal()" class="text-gray-400 hover:text-gray-600 transition"><i class="fa-solid fa-xmark text-xl"></i></button></div><div class="space-y-4"><div><label class="block text-xs font-bold text-gray-500 mb-1">店名 / 景點名稱 <span class="text-red-500">*</span></label><input type="text" id="spot-name" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500"><label class="block text-xs font-bold text-gray-500 mb-1">詳細地址 (選填)</label><input type="text" id="spot-address" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"></div><div class="flex gap-3"><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">開始時間</label><input type="time" id="spot-time" value="09:00" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"></div><div class="flex-1"><label class="block text-xs font-bold text-gray-500 mb-1">停留時間</label><div class="flex items-center gap-1"><input type="number" id="spot-duration-h" value="1" min="0" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"><span class="text-xs text-gray-500">時</span><input type="number" id="spot-duration-m" value="0" min="0" step="5" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"><span class="text-xs text-gray-500">分</span></div></div></div><div><label class="block text-xs font-bold text-gray-500 mb-2">分類</label><div class="grid grid-cols-3 gap-2 mb-2"><label class="cursor-pointer"><input type="radio" name="spot-type" value="attraction" class="peer sr-only" checked onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-orange-50 peer-checked:border-orange-500 peer-checked:text-orange-600 transition"><i class="fa-solid fa-camera mb-1"></i><div class="text-[10px] font-bold">景點</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="food" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-red-50 peer-checked:border-red-500 peer-checked:text-red-600 transition"><i class="fa-solid fa-utensils mb-1"></i><div class="text-[10px] font-bold">美食</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="shopping" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-purple-50 peer-checked:border-purple-500 peer-checked:text-purple-600 transition"><i class="fa-solid fa-bag-shopping mb-1"></i><div class="text-[10px] font-bold">購物</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="transit" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-600 transition"><i class="fa-solid fa-train mb-1"></i><div class="text-[10px] font-bold">交通</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="hotel" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-teal-50 peer-checked:border-teal-500 peer-checked:text-teal-600 transition"><i class="fa-solid fa-bed mb-1"></i><div class="text-[10px] font-bold">住宿</div></div></label><label class="cursor-pointer"><input type="radio" name="spot-type" value="custom" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-gray-100 peer-checked:border-gray-600 transition"><i class="fa-solid fa-pen mb-1"></i><div class="text-[10px] font-bold">自訂</div></div></label></div><input type="text" id="spot-custom-type" placeholder="請輸入自訂分類" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 hidden text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></div><div class="bg-blue-50 p-3 rounded-xl border border-blue-100"><label class="block text-xs font-bold text-blue-800 mb-2"><i class="fa-solid fa-route mr-1"></i>前往此站的交通 (從上一站)</label><div class="flex gap-2 items-center"><select id="spot-travel-mode" class="flex-1 bg-white border border-blue-200 rounded-lg py-2 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"><option value="">最佳方式 (自動)</option><option value="driving">🚗 開車/計程車</option><option value="transit">🚇 大眾運輸</option><option value="walking">🚶 步行</option></select><div class="flex items-center gap-1 flex-1"><input type="number" id="spot-travel-h" value="0" min="0" class="w-full bg-white border border-blue-200 rounded-lg py-2 text-center text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"><span class="text-[10px]">時</span><input type="number" id="spot-travel-m" value="0" min="0" step="5" class="w-full bg-white border border-blue-200 rounded-lg py-2 text-center text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"><span class="text-[10px]">分</span></div></div></div><div><label class="block text-xs font-bold text-gray-500 mb-1">備註 (選填)</label><input type="text" id="spot-note" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"></div></div><button id="save-spot-btn" onclick="saveSpot()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-md mt-6 hover:bg-blue-700 transition">儲存景點</button></div></div>
+        <div id="add-spot-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[60] hidden flex justify-center items-end sm:items-center">
+            <div class="bg-white w-full max-w-md sm:rounded-2xl rounded-t-2xl p-6 h-[85vh] sm:h-auto overflow-y-auto">
+                <div class="flex justify-between items-center mb-4"><h3 id="modal-title" class="font-bold text-lg text-gray-800">新增行程點</h3><button onclick="closeAddSpotModal()" class="text-gray-400"><i class="fa-solid fa-xmark text-xl"></i></button></div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">店名 / 景點名稱 <span class="text-red-500">*</span></label>
+                        <input type="text" id="spot-name" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-xs font-bold text-gray-500 mb-1">詳細地址 (選填)</label>
+                        <input type="text" id="spot-address" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="flex gap-3">
+                        <div class="flex-1">
+                            <label class="block text-xs font-bold text-gray-500 mb-1">開始時間</label>
+                            <input type="time" id="spot-time" value="09:00" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-bold text-gray-500 mb-1">停留時間</label>
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="spot-duration-h" value="1" min="0" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"><span class="text-xs text-gray-500">時</span>
+                                <input type="number" id="spot-duration-m" value="0" min="0" step="5" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-500"><span class="text-xs text-gray-500">分</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-2">分類</label>
+                        <div class="grid grid-cols-3 gap-2 mb-2">
+                            <label class="cursor-pointer"><input type="radio" name="spot-type" value="attraction" class="peer sr-only" checked onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-orange-50 peer-checked:border-orange-500 peer-checked:text-orange-600 transition"><i class="fa-solid fa-camera mb-1"></i><div class="text-[10px] font-bold">景點</div></div></label>
+                            <label class="cursor-pointer"><input type="radio" name="spot-type" value="food" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-red-50 peer-checked:border-red-500 peer-checked:text-red-600 transition"><i class="fa-solid fa-utensils mb-1"></i><div class="text-[10px] font-bold">美食</div></div></label>
+                            <label class="cursor-pointer"><input type="radio" name="spot-type" value="shopping" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-purple-50 peer-checked:border-purple-500 peer-checked:text-purple-600 transition"><i class="fa-solid fa-bag-shopping mb-1"></i><div class="text-[10px] font-bold">購物</div></div></label>
+                            <label class="cursor-pointer"><input type="radio" name="spot-type" value="transit" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-blue-50 peer-checked:border-blue-500 peer-checked:text-blue-600 transition"><i class="fa-solid fa-train mb-1"></i><div class="text-[10px] font-bold">交通</div></div></label>
+                            <label class="cursor-pointer"><input type="radio" name="spot-type" value="hotel" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-teal-50 peer-checked:border-teal-500 peer-checked:text-teal-600 transition"><i class="fa-solid fa-bed mb-1"></i><div class="text-[10px] font-bold">住宿</div></div></label>
+                            <label class="cursor-pointer"><input type="radio" name="spot-type" value="custom" class="peer sr-only" onchange="toggleCustomType()"><div class="text-center p-2 rounded-lg border border-gray-200 peer-checked:bg-gray-100 peer-checked:border-gray-600 transition"><i class="fa-solid fa-pen mb-1"></i><div class="text-[10px] font-bold">自訂</div></div></label>
+                        </div>
+                        <input type="text" id="spot-custom-type" placeholder="請輸入自訂分類" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 hidden text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+                        <label class="block text-xs font-bold text-blue-800 mb-2"><i class="fa-solid fa-route mr-1"></i>前往此站的交通 (從上一站)</label>
+                        <div class="flex gap-2 items-center">
+                            <select id="spot-travel-mode" class="flex-1 bg-white border border-blue-200 rounded-lg py-2 px-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="">最佳方式 (自動)</option>
+                                <option value="driving">🚗 開車/計程車</option>
+                                <option value="transit">🚇 大眾運輸</option>
+                                <option value="walking">🚶 步行</option>
+                            </select>
+                            <div class="flex items-center gap-1 flex-1">
+                                <input type="number" id="spot-travel-h" value="0" min="0" class="w-full bg-white border border-blue-200 rounded-lg py-2 text-center text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"><span class="text-[10px]">時</span>
+                                <input type="number" id="spot-travel-m" value="0" min="0" step="5" class="w-full bg-white border border-blue-200 rounded-lg py-2 text-center text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"><span class="text-[10px]">分</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">備註 (選填)</label>
+                        <input type="text" id="spot-note" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <button id="save-spot-btn" onclick="saveSpot()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-md mt-6 hover:bg-blue-700 transition">儲存景點</button>
+            </div>
+        </div>
 
         <!-- 導航列 -->
         <nav id="bottom-nav" class="bg-white border-t border-gray-200 fixed bottom-0 w-full max-w-[480px] z-50 px-1 pb-safe hidden">
@@ -399,7 +469,6 @@
 
     </div>
 
-    <!-- JavaScript 邏輯 (完全無伺服器架構) -->
     <script>
         const API_KEY = ""; 
         let globalExchangeRates = { TWD: 1 };
@@ -411,13 +480,12 @@
         let luggageSourceScreen = 'screen-trips-list'; 
         let budgetSourceScreen = 'screen-trips-list';
         let currentBudgetDayIndex = 0; 
-        let currencyChartInstance = null;
         let budgetPieChartInstance = null;
         let currentCalDate = new Date();
         const calColorPalette = ['bg-color-0', 'bg-color-1', 'bg-color-2', 'bg-color-3', 'bg-color-4'];
         let editingSpotId = null;
 
-        const CURRENCY_NAMES = { TWD: '台幣', JPY: '日圓', KRW: '韓元', USD: '美金', EUR: '歐元', THB: '泰銖' };
+        const CURRENCY_NAMES = { TWD: '台幣', JPY: '日圓', KRW: '韓元', USD: '美金', EUR: '歐元', THB: '泰銖', GBP: '英鎊' };
         let currentUser = null;
 
         // ==========================================
@@ -473,7 +541,6 @@
                         importedTrip.id = Date.now(); // 產生新 ID，避免衝突
                         importedTrip.startDate = new Date(importedTrip.startDate);
                         
-                        // 防呆結構建立
                         if(!importedTrip.daysData) importedTrip.daysData = [];
                         if(!importedTrip.budget) importedTrip.budget = Array.from({ length: importedTrip.totalDays || 1 }, () => []);
                         if(!importedTrip.luggage) importedTrip.luggage = [];
@@ -483,7 +550,6 @@
                         saveTripsToLocal();
                         alert("旅程匯入成功！");
                         
-                        // 清理網址
                         window.history.replaceState({}, document.title, window.location.pathname);
                         openExistingTrip(importedTrip.id);
                     } else {
@@ -495,7 +561,6 @@
                     window.history.replaceState({}, document.title, window.location.pathname);
                 }
             } else {
-                // 如果沒有要匯入，且目前在登入頁，就進首頁
                 if (document.getElementById('screen-login').classList.contains('active')) {
                     switchScreen('screen-home', 'nav-home');
                 }
@@ -518,11 +583,12 @@
                 document.getElementById('login-state-new').classList.add('hidden');
                 document.getElementById('login-state-returning').classList.remove('hidden');
                 document.getElementById('returning-user-name').innerText = currentUser;
+                document.getElementById('btn-user-name').innerText = currentUser;
                 
                 document.getElementById('bottom-nav').classList.remove('hidden');
                 
                 initApp();
-                checkAndImportTrip(); // 執行匯入檢查
+                checkAndImportTrip(); 
             } else {
                 document.getElementById('login-state-returning').classList.add('hidden');
                 document.getElementById('login-state-new').classList.remove('hidden');
@@ -568,9 +634,17 @@
                 safeSetLocal('yolee_user', currentUser);
                 document.getElementById('welcome-name').innerText = currentUser;
                 document.getElementById('settings-nickname').innerText = currentUser;
+                document.getElementById('returning-user-name').innerText = currentUser;
+                document.getElementById('btn-user-name').innerText = currentUser;
                 document.getElementById('settings-edit-nickname').value = '';
                 alert("暱稱修改成功！");
             }
+        }
+
+        function switchLoginStateToNew() {
+            document.getElementById('login-state-returning').classList.add('hidden');
+            document.getElementById('login-state-new').classList.remove('hidden');
+            document.getElementById('login-nickname').value = '';
         }
 
         // ==========================================
@@ -581,6 +655,7 @@
             try { renderCalendar(); } catch(e){}
             try { renderHomeDashboard(); } catch(e){}
             try { fetchCurrencyRates(); } catch(e){}
+            try { renderTravelTip(); } catch(e){}
         }
 
         function switchScreen(screenId, navId = null) {
@@ -606,19 +681,25 @@
         }
 
         // ==========================================
-        // 首頁：匯率與走勢圖系統 
+        // 首頁：匯率系統 
         // ==========================================
         async function fetchCurrencyRates() {
-            const base = document.getElementById('base-currency-select').value;
-            const target = document.getElementById('target-currency-select').value;
+            const baseSelect = document.getElementById('base-currency-select');
+            const targetSelect = document.getElementById('target-currency-select');
             const rateInfoEl = document.getElementById('rate-info-text');
+            
+            if (!baseSelect || !targetSelect) return;
+            const base = baseSelect.value; 
+            const target = targetSelect.value; 
+            
             if(rateInfoEl) rateInfoEl.innerText = "載入中...";
-
             try {
+                // 抓取全域換算資料 (供記帳本使用)
                 const resTWD = await fetch('https://open.er-api.com/v6/latest/TWD');
                 const dataTWD = await resTWD.json();
                 globalExchangeRates = dataTWD.rates; 
 
+                // 抓取畫面上選擇的基準幣別
                 const resBase = await fetch(`https://open.er-api.com/v6/latest/${base}`);
                 const dataBase = await resBase.json();
                 activeExchangeRate = dataBase.rates[target];
@@ -633,15 +714,15 @@
                 if (calcBase && !calcBase.value) calcBase.value = 1000;
                 calcCurrency('BASE');
 
-                renderCurrencyChart(base, target, activeExchangeRate);
             } catch (error) {
-                if(rateInfoEl) rateInfoEl.innerText = "匯率載入失敗";
+                if(rateInfoEl) rateInfoEl.innerText = "匯率載入失敗 (請確認網路連線)";
             }
         }
 
         function calcCurrency(source) {
             const baseInput = document.getElementById('calc-base');
             const targetInput = document.getElementById('calc-target');
+            if (!baseInput || !targetInput) return;
             if (source === 'BASE') {
                 const baseVal = parseFloat(baseInput.value) || 0;
                 targetInput.value = (baseVal * activeExchangeRate).toFixed(2);
@@ -651,48 +732,39 @@
             }
         }
 
-        function renderCurrencyChart(base, target, currentRate) {
-            const ctx = document.getElementById('currencyChart').getContext('2d');
-            if(currencyChartInstance) currencyChartInstance.destroy();
-
-            const labels = Array.from({length: 30}, (_, i) => `${i+1}日前`);
-            labels.reverse(); labels[29] = "今日";
-            
-            let data = [];
-            let r = currentRate;
-            for(let i=0; i<29; i++) {
-                r = r * (1 + (Math.random() - 0.5) * 0.015); 
-                data.push(r);
-            }
-            data.push(currentRate);
-
-            currencyChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: `${base} 兌 ${target} 模擬走勢`,
-                        data: data,
-                        borderColor: '#0ea5e9',
-                        backgroundColor: 'rgba(14, 165, 233, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        pointRadius: 0,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { x: { display: false }, y: { display: false, min: Math.min(...data) * 0.99, max: Math.max(...data) * 1.01 } },
-                    interaction: { intersect: false, mode: 'index' },
-                }
-            });
+        // ==========================================
+        // 首頁：旅行提示與 YOLEE 的話
+        // ==========================================
+        const travelTips = [
+            "打包衣物時可用「捲筒式」收納，不僅節省空間還能減少皺褶喔！出國前也別忘了再次確認護照效期是否大於六個月。",
+            "將重要文件（如護照、簽證、訂房紀錄）拍照存在手機相簿，並將副本傳給緊急聯絡人以防萬一。",
+            "隨身攜帶一個空的環保水瓶，通過機場安檢後即可在候機室裝水，省錢又環保！",
+            "在 Google Maps 上事先下載目的地的「離線地圖」，這樣即使網路訊號不穩也能順利導航。",
+            "準備一個分類收納袋專門放充電線、轉接頭與行動電源，找東西時就不會手忙腳亂了。",
+            "長途飛行記得準備保濕乳液與護唇膏，機艙內的空氣非常乾燥。穿著寬鬆衣物也會讓旅程更舒適。",
+            "出發前記得打電話給信用卡公司，確認是否有開通「海外刷卡」與「預借現金」功能，並記下海外客服專線。",
+            "如果要去不同氣候的國家，建議採用「洋蔥式穿法」，方便隨時穿脫適應溫差。",
+            "把所有的液體保養品放進透明的夾鏈袋中，過海關檢查時會快速非常多！",
+            "行李箱上綁一條顏色鮮豔的緞帶或行李束帶，在轉盤上能一眼認出自己的行李，避免被拿錯。",
+            "不要把所有現金放在同一個地方！分散放在錢包、隨身包包和行李箱暗袋中分散風險。",
+            "出發前一天記得再次確認航班航廈，有些機場有多個航廈且距離很遠，跑錯會很麻煩。",
+            "準備一些常備藥品，如腸胃藥、止痛藥、感冒藥、OK繃等，在國外買藥有時不太方便。",
+            "搭乘大眾運輸時，貴重物品請放在身前，不要放在後背包的口袋，小心扒手！",
+            "保留飯店名片或寫有地址的紙條，萬一迷路或搭計程車時，可以直接拿給司機看。"
+        ];
+        function renderTravelTip() {
+            const tipEl = document.getElementById('travel-tip-text');
+            if(tipEl) { tipEl.innerText = travelTips[Math.floor(Math.random() * travelTips.length)]; }
         }
 
+        // ==========================================
+        // 首頁：月曆與近期旅程
+        // ==========================================
         function initCalendarSelectors() {
             const yearSel = document.getElementById('cal-year-select');
             const monthSel = document.getElementById('cal-month-select');
+            if(!yearSel || !monthSel) return;
+            yearSel.innerHTML = ''; monthSel.innerHTML = '';
             const currentYear = new Date().getFullYear();
             
             for(let y = currentYear - 3; y <= 2035; y++) yearSel.add(new Option(`${y}年`, y));
@@ -710,10 +782,14 @@
 
         function renderCalendar() {
             const grid = document.getElementById('calendar-grid');
+            if(!grid) return;
             grid.innerHTML = '';
 
             const year = currentCalDate.getFullYear(); const month = currentCalDate.getMonth();
-            document.getElementById('cal-year-select').value = year; document.getElementById('cal-month-select').value = month;
+            const yearSel = document.getElementById('cal-year-select');
+            const monthSel = document.getElementById('cal-month-select');
+            if(yearSel) yearSel.value = year; 
+            if(monthSel) monthSel.value = month;
 
             const firstDay = new Date(year, month, 1).getDay(); 
             const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -729,7 +805,8 @@
                 for(let i=0; i<trip.totalDays; i++) {
                     const dateStr = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
                     if(!tripMap.has(dateStr)) tripMap.set(dateStr, []);
-                    tripMap.get(dateStr).push(trip.title);
+                    const displayName = trip.displayMain || trip.title || "旅程";
+                    tripMap.get(dateStr).push({ name: displayName, title: trip.title });
                     d.setDate(d.getDate() + 1);
                 }
             });
@@ -748,8 +825,8 @@
 
                 let badgeHtml = "";
                 if (tripsOnDate && tripsOnDate.length > 0) {
-                    const colorClass = tripColors[tripsOnDate[0]];
-                    badgeHtml = `<div class="trip-badge ${colorClass}">${tripsOnDate[0]}</div>`;
+                    const colorClass = tripColors[tripsOnDate[0].title];
+                    badgeHtml = `<div class="trip-badge ${colorClass}">${tripsOnDate[0].name}</div>`;
                 }
                 grid.innerHTML += `<div class="${classes}"><span>${i}</span>${badgeHtml}</div>`;
             }
@@ -757,6 +834,7 @@
 
         function renderHomeDashboard() {
             const highlightContainer = document.getElementById('next-trip-highlight');
+            if(!highlightContainer) return;
             if (allTrips.length === 0) {
                 highlightContainer.innerHTML = `<p class="text-sm text-blue-100 mb-1">近期沒有即將出發的旅程</p><h3 class="font-bold text-lg">是時候規劃下一趟冒險了！</h3>`; return;
             }
@@ -765,6 +843,7 @@
             let nextTrip = null; let minDiff = Infinity;
 
             allTrips.forEach(trip => {
+                if(!trip.startDate) return;
                 const startDate = new Date(trip.startDate); startDate.setHours(0,0,0,0);
                 const diffDays = Math.ceil((startDate - today) / (1000 * 60 * 60 * 24));
                 if (diffDays >= 0 && diffDays < minDiff) { minDiff = diffDays; nextTrip = trip; }
@@ -845,7 +924,7 @@
 
             allTrips.push(newTrip); currentTripId = newTrip.id; currentDayIndex = 0;
             
-            // 修正 1：避免跳轉崩潰 (原先清除沒有的 ID 導致)
+            // 修正 2: 精準清空新的拆分輸入框
             document.getElementById('add-trip-region-dom').value = ''; 
             document.getElementById('add-trip-country-intl').value = '';
             document.getElementById('add-trip-region-intl').value = ''; 
@@ -859,7 +938,7 @@
 
         function openEditTripModal() {
             const trip = allTrips.find(t => t.id === currentTripId);
-            if (!trip) return;
+            if(!trip) return;
             
             const typeRadio = document.querySelector(`input[name="edit-trip-type"][value="${trip.isDomestic ? 'domestic' : 'international'}"]`);
             if (typeRadio) typeRadio.checked = true;
@@ -937,8 +1016,7 @@
                 while(trip.budget.length < trip.totalDays) trip.budget.push([]);
             }
             saveTripsToLocal(); 
-            closeEditTripModal(); 
-            loadTripToUI(trip);
+            closeEditTripModal(); loadTripToUI(trip);
         }
 
         function deleteCurrentTrip() {
@@ -994,7 +1072,6 @@
             else completedTrips.forEach(t => { compContainer.innerHTML += buildCard(t, -999); });
         }
 
-        // 修正 3: 確保渲染標題更新
         function loadTripToUI(trip) { 
             document.getElementById('trip-title').innerText = trip.title; 
             document.getElementById('trip-dates').innerHTML = `<i class="fa-regular fa-calendar mr-1"></i>${trip.datesString}`; 
@@ -1030,7 +1107,7 @@
         function switchDay(index) { currentDayIndex = index; const currentTrip = allTrips.find(t=>t.id===currentTripId); if(currentTrip) generateDayTabs(currentTrip); renderTimeline(); }
 
         // ==========================================
-        // 單機分享功能 (LZ-String) - 修正 2: 解決網址疊加複製錯誤
+        // 單機分享功能 (LZ-String)
         // ==========================================
         function openShareModal() {
             const trip = allTrips.find(t => t.id === currentTripId);
@@ -1042,7 +1119,6 @@
             const jsonStr = JSON.stringify(exportData);
             const compressed = LZString.compressToEncodedURIComponent(jsonStr);
             
-            // 確保網址是最乾淨的基底，避免重複加上 queryString 或 hash
             let baseUrl = window.location.href.split('?')[0].split('#')[0];
             const shareUrl = baseUrl + '?import=' + compressed;
             
@@ -1056,7 +1132,6 @@
             const input = document.getElementById('share-link-input');
             const url = input.value;
             
-            // 優先使用新版 API
             if (navigator.clipboard && window.isSecureContext) {
                 navigator.clipboard.writeText(url).then(() => {
                     showCopySuccess(btn);
@@ -1144,7 +1219,7 @@
         function deleteBudgetItem(id) { const trip = allTrips.find(t => t.id === currentTripId); trip.budget[currentBudgetDayIndex] = trip.budget[currentBudgetDayIndex].filter(i => i.id !== id); saveTripsToLocal(); renderBudgetList(); }
 
         // ==========================================
-        // 行程編輯、地圖與 AI 功能
+        // 行程點編輯與新增
         // ==========================================
         function openAddSpotModal() { editingSpotId = null; document.getElementById('modal-title').innerText = "新增行程點"; document.getElementById('save-spot-btn').innerText = "儲存景點"; document.getElementById('add-spot-modal').classList.remove('hidden'); }
         function closeAddSpotModal() { document.getElementById('add-spot-modal').classList.add('hidden'); document.getElementById('spot-name').value = ''; document.getElementById('spot-address').value = ''; document.getElementById('spot-note').value = ''; document.getElementById('spot-duration-h').value = '1'; document.getElementById('spot-duration-m').value = '0'; document.getElementById('spot-time').value = '09:00'; document.getElementById('spot-custom-type').value = ''; document.getElementById('spot-custom-type').classList.add('hidden'); document.querySelector('input[name="spot-type"][value="attraction"]').checked = true; document.getElementById('spot-travel-mode').value = ''; document.getElementById('spot-travel-h').value = '0'; document.getElementById('spot-travel-m').value = '0'; editingSpotId = null; }
@@ -1281,7 +1356,7 @@
                             </div>
                             ${item.note ? `<p class="text-xs text-gray-500 mt-2 bg-gray-50 p-1.5 rounded"><i class="fa-regular fa-comment-dots mr-1"></i>${item.note}</p>` : ''}
                             <div class="flex gap-2 mt-3">
-                                <a href="${searchUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-sky-50 text-sky-600 text-[10px] py-2 rounded font-bold hover:bg-sky-100 transition flex items-center justify-center"><i class="fa-solid fa-map-pin mr-1"></i> 查看地標</a>
+                                <a href="${searchUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-sky-50 text-sky-600 text-[10px] py-1.5 rounded font-bold hover:bg-sky-100 transition flex items-center justify-center"><i class="fa-solid fa-map-pin mr-1"></i> 查看地標</a>
                                 ${navToHereHtml}
                             </div>
                         </div>
@@ -1303,6 +1378,7 @@
         async function askAi() {
             const inputEl = document.getElementById('ai-prompt-input'); const prompt = inputEl.value.trim(); if (!prompt) return;
             const chatArea = document.getElementById('ai-chat-area'); const trip = allTrips.find(t => t.id === currentTripId); const contextLocation = trip ? trip.location : "未知地點";
+            
             chatArea.innerHTML += `<div class="flex gap-3 justify-end animate-[fadeIn_0.3s_ease-out]"><div class="bg-indigo-600 p-3 rounded-2xl rounded-tr-none shadow-sm text-sm text-white max-w-[85%]">${prompt}</div></div>`;
             inputEl.value = '';
             
@@ -1349,9 +1425,13 @@
         function addAiSpotToTimeline(encodedData) {
             const data = JSON.parse(decodeURIComponent(encodedData));
             openAddSpotModal();
-            document.getElementById('spot-name').value = data.name; document.getElementById('spot-note').value = "💡 AI推薦：" + data.note;
-            if (document.querySelector(`input[name="spot-type"][value="${data.type}"]`)) { document.querySelector(`input[name="spot-type"][value="${data.type}"]`).checked = true; } 
-            else { document.querySelector(`input[name="spot-type"][value="attraction"]`).checked = true; }
+            document.getElementById('spot-name').value = data.name; 
+            document.getElementById('spot-note').value = "💡 AI推薦：" + data.note;
+            if (document.querySelector(`input[name="spot-type"][value="${data.type}"]`)) { 
+                document.querySelector(`input[name="spot-type"][value="${data.type}"]`).checked = true; 
+            } else { 
+                document.querySelector(`input[name="spot-type"][value="attraction"]`).checked = true; 
+            }
             toggleCustomType(); closeAiModal();
         }
     </script>
